@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -178,7 +178,7 @@
             <span class="title-letter">a</span>
             <span class="title-letter">y</span>
         </h1>
-        <p class="date" id="dateTag">18 February 2026</p>
+        <p class="date">18 February 2026</p>
         
         <div class="char-container">
             <div class="controller-grid">
@@ -223,7 +223,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const customName = urlParams.get('name');
         const customMessage = urlParams.get('message');
-        const customDate = urlParams.get('date');
 
         // Update name if provided
         if (customName) {
@@ -233,11 +232,6 @@
         // Update message if provided
         if (customMessage) {
             document.getElementById('messageText').textContent = customMessage;
-        }
-
-        // Update date if provided
-        if (customDate) {
-            document.getElementById('dateTag').textContent = customDate;
         }
 
         // Make name tag editable on click
@@ -270,40 +264,6 @@
             input.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     saveName();
-                }
-            });
-        });
-
-        // Make date tag editable on click
-        const dateTag = document.getElementById('dateTag');
-        dateTag.addEventListener('click', function() {
-            const currentDate = dateTag.textContent;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentDate;
-            input.className = 'date-input';
-            
-            dateTag.replaceWith(input);
-            input.focus();
-            input.select();
-
-            function saveDate() {
-                const newDate = input.value.trim() || currentDate;
-                const newDateTag = document.createElement('p');
-                newDateTag.className = 'date';
-                newDateTag.id = 'dateTag';
-                newDateTag.textContent = newDate;
-                
-                input.replaceWith(newDateTag);
-                
-                // Re-attach click event to new element
-                newDateTag.addEventListener('click', arguments.callee.bind(dateTag));
-            }
-
-            input.addEventListener('blur', saveDate);
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    saveDate();
                 }
             });
         });
