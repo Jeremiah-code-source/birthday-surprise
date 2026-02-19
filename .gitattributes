@@ -1,0 +1,7 @@
+# Handle video files
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.webm filter=lfs diff=lfs merge=lfs -text
+
+# Handle JSON files as text
+*.json text eol=lf

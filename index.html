@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Surprise</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #e0f3ff;
+            background-image: radial-gradient(#bcdfff 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container { text-align: center; width: 100%; padding: 10px 0 20px; }
+        .title { font-size: 3.5rem; color: #d63384; text-shadow: 2px 2px white; margin: 0; }
+        .title-letter { cursor: pointer; display: inline-block; }
+
+        .shape-symbol {
+            position: absolute;
+            font-size: 2.5rem;
+            user-select: none;
+            pointer-events: none;
+            animation: floatShape 2s ease-out forwards;
+        }
+
+        @keyframes floatShape {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
+        }
+        .date { background: #004a9f; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+        
+        /* Ensuring the controller container is large enough and centered */
+        .char-container { 
+            margin: 10px auto; 
+            position: relative; 
+            width: 100%; 
+            max-width: 600px;
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .controller-grid {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .controller-grid video {
+            flex: 1 1 0;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        #controller-lottie { width: 100%; height: 100%; }
+
+        .name-tag { 
+            background: #004a9f; 
+            color: white; 
+            padding: 6px 20px; 
+            border-radius: 20px; 
+            display: block; 
+            margin: 12px auto 8px;
+            font-weight: bold; 
+        }
+
+        #openBtn { 
+            background-color: #004a9f; 
+            color: white; 
+            border: none; 
+            padding: 15px 40px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-size: 1.2rem; 
+            transition: 0.3s; 
+            box-shadow: 0 5px 15px rgba(0, 74, 159, 0.3); 
+            display: block;
+            margin: 0 auto;
+        }
+        #openBtn:hover { transform: scale(1.1); background-color: #003a7b; }
+
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
+        .modal-content { 
+            background-color: #fff; 
+            margin: 10% auto; 
+            padding: 40px; 
+            border-radius: 25px; 
+            width: 85%; 
+            max-width: 500px; 
+            position: relative; 
+            text-align: center; 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
+        .message { font-style: italic; color: #666; font-size: 1.2rem; margin: 20px 0; }
+        .close { position: absolute; right: 25px; top: 15px; font-size: 30px; cursor: pointer; color: #aaa; }
+        
+        .heart { position: absolute; font-size: 25px; user-select: none; pointer-events: none; animation: floatUp 3s ease-out forwards; }
+        @keyframes floatUp { 
+            0% { transform: translateY(0) scale(1); opacity: 1; } 
+            100% { transform: translateY(-400px) scale(1.5); opacity: 0; } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="title-letter">H</span>
+            <span class="title-letter">a</span>
+            <span class="title-letter">p</span>
+            <span class="title-letter">p</span>
+            <span class="title-letter">y</span>
+            &nbsp;
+            <span class="title-letter">B</span>
+            <span class="title-letter">i</span>
+            <span class="title-letter">r</span>
+            <span class="title-letter">t</span>
+            <span class="title-letter">h</span>
+            <span class="title-letter">d</span>
+            <span class="title-letter">a</span>
+            <span class="title-letter">y</span>
+        </h1>
+        <p class="date">18 February 2026</p>
+        
+        <div class="char-container">
+            <div class="controller-grid">
+                <video src="videos/Controller.mp4" autoplay loop muted playsinline></video>
+                <video src="videos/Controller3.mp4" autoplay loop muted playsinline></video>
+                <video src="videos/Controller4.mp4" autoplay loop muted playsinline></video>
+            </div>
+        </div>
+
+        <div class="name-tag">Kaison Jude Prins</div>
+
+        
+        <button id="openBtn">Open Your Gift 🎁</button>
+    </div>
+
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <video id="gamer-video" loop muted playsinline autoplay controls style="width:200px; height:200px; margin:0 auto; display:block;">
+                <source src="videos/Cool Gamer.mp4" type="video/mp4">
+                <source src="videos/Gamer.mov" type="video/quicktime">
+                Your browser does not support the video tag.
+            </video>
+            <div id="video-fallback" style="display:none; margin-top:12px; color:#c00;">
+                Can't play the video inline. <a id="video-open-link" href="videos/Cool%20Gamer.mp4" target="_blank" rel="noopener">Open video in a new tab</a>
+            </div>
+            <h3>Level Up! 🎮</h3>
+            <p class="message">"You are a very special boy. I wish you all the best, lots of health, and lots of joy. Happy Birthday!"</p>
+            <div id="heart-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("cardModal");
+        const btn = document.getElementById("openBtn");
+        const span = document.querySelector(".close");
+        const heartContainer = document.getElementById("heart-container");
+        const gamerVideo = document.getElementById("gamer-video");
+        const titleLetters = document.querySelectorAll(".title-letter");
+
+        btn.onclick = () => {
+            modal.style.display = "block";
+            if (gamerVideo) {
+                gamerVideo.currentTime = 0;
+                const playPromise = gamerVideo.play();
+                if (playPromise && playPromise.catch) {
+                    playPromise.catch(err => {
+                        console.error('gamer-video play failed:', err);
+                        const vf = document.getElementById('video-fallback');
+                        if (vf) vf.style.display = 'block';
+                    });
+                }
+            }
+            for (let i = 0; i < 30; i++) { setTimeout(createHeart, i * 60); }
+        };
+
+        span.onclick = () => {
+            modal.style.display = "none";
+            if (gamerVideo) gamerVideo.pause();
+        };
+        window.onclick = (e) => {
+            if (e.target == modal) {
+                modal.style.display = "none";
+                if (gamerVideo) gamerVideo.pause();
+            }
+        };
+
+        function createShape() {
+            const symbols = ["■", "▲", "✖", "●"];
+            const colors = ["#ff6ec7", "#00e6a8", "#5da9ff", "#ff4b4b"];
+            const index = Math.floor(Math.random() * symbols.length);
+
+            const shape = document.createElement("div");
+            shape.className = "shape-symbol";
+            shape.textContent = symbols[index];
+            shape.style.color = colors[index];
+            shape.style.left = (10 + Math.random() * 80) + "%";
+            shape.style.top = "30%";
+
+            document.body.appendChild(shape);
+            setTimeout(() => shape.remove(), 2000);
+        }
+
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.innerHTML = "❤️";
+            heart.style.left = Math.random() * 90 + "%";
+            heart.style.top = "60%";
+            heartContainer.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+        }
+
+        titleLetters.forEach(letter => {
+            letter.addEventListener("click", () => {
+                createShape();
+            });
+        });
+
+        if (gamerVideo) {
+            gamerVideo.addEventListener('error', (e) => {
+                console.error('gamer-video error', e);
+                const vf = document.getElementById('video-fallback');
+                if (vf) vf.style.display = 'block';
+            });
+            gamerVideo.addEventListener('loadeddata', () => { console.log('gamer-video loadeddata, readyState=', gamerVideo.readyState); });
+        }
+    </script>
+</body>
+</html>
