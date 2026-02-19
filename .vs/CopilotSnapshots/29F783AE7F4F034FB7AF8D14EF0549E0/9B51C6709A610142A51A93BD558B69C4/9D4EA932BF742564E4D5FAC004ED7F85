@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -93,15 +93,6 @@
             flex: 1 1 0;
             height: 100%;
             object-fit: contain;
-            cursor: pointer;
-            transition: 0.3s;
-            border: 3px solid transparent;
-            border-radius: 10px;
-        }
-        
-        .controller-grid video:hover {
-            border-color: #004a9f;
-            transform: scale(1.05);
         }
         
         #controller-lottie { width: 100%; height: 100%; }
@@ -414,10 +405,10 @@
 
         function createShape(clickX, clickY) {
             const symbols = ["■", "▲", "✖", "●"];
-            const colors = ["#ff6ec7", "#00e6a8", "#5da9ff", "#ff4b4b", "#ffd700", "#00ff00", "#ff00ff", "#00ffff"];
+            const colors = ["#ff6ec7", "#00e6a8", "#5da9ff", "#ff4b4b", "#ffd700", "#00ff00"];
             
-            // Create massive explosion to fill screen
-            const numShapes = 80 + Math.floor(Math.random() * 40);
+            // Create multiple shapes for explosion effect
+            const numShapes = 15 + Math.floor(Math.random() * 10);
             
             for (let i = 0; i < numShapes; i++) {
                 setTimeout(() => {
@@ -427,20 +418,16 @@
                     shape.textContent = symbols[index];
                     shape.style.color = colors[Math.floor(Math.random() * colors.length)];
                     
-                    // Random size variation
-                    const size = 1.5 + Math.random() * 2;
-                    shape.style.fontSize = size + 'rem';
-                    
                     // Position at click location
                     shape.style.left = clickX + 'px';
                     shape.style.top = clickY + 'px';
                     
-                    // Random direction and much larger distance for full screen coverage
+                    // Random direction and distance for explosion
                     const angle = Math.random() * Math.PI * 2;
-                    const distance = 200 + Math.random() * 800;
+                    const distance = 100 + Math.random() * 300;
                     const tx = Math.cos(angle) * distance;
                     const ty = Math.sin(angle) * distance;
-                    const rotate = Math.random() * 1440 - 720;
+                    const rotate = Math.random() * 720 - 360;
                     
                     shape.style.setProperty('--tx', tx + 'px');
                     shape.style.setProperty('--ty', ty + 'px');
@@ -448,7 +435,7 @@
                     
                     document.body.appendChild(shape);
                     setTimeout(() => shape.remove(), 3000);
-                }, i * 15);
+                }, i * 20);
             }
         }
 
@@ -478,52 +465,6 @@
                 if (vf) vf.style.display = 'block';
             });
             gamerVideo.addEventListener('loadeddata', () => { console.log('gamer-video loadeddata, readyState=', gamerVideo.readyState); });
-        }
-
-        // Make controller videos replaceable
-        const controllerVideos = document.querySelectorAll('.controller-grid video');
-        controllerVideos.forEach((video, index) => {
-            video.addEventListener('click', function() {
-                const fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                fileInput.accept = 'video/*';
-                
-                fileInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const videoURL = URL.createObjectURL(file);
-                        video.src = videoURL;
-                        video.load();
-                        video.play().catch(err => console.error('Video play error:', err));
-                    }
-                });
-                
-                fileInput.click();
-            });
-        });
-
-        // Make modal video replaceable
-        if (gamerVideo) {
-            gamerVideo.addEventListener('click', function(e) {
-                // Only trigger if not playing/pausing via controls
-                if (e.target === gamerVideo) {
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.accept = 'video/*';
-                    
-                    fileInput.addEventListener('change', function(e) {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const videoURL = URL.createObjectURL(file);
-                            gamerVideo.src = videoURL;
-                            gamerVideo.load();
-                            gamerVideo.play().catch(err => console.error('Video play error:', err));
-                        }
-                    });
-                    
-                    fileInput.click();
-                }
-            });
         }
     </script>
 </body>
