@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -104,7 +104,6 @@
             border: 3px solid transparent;
             border-radius: 10px;
             min-width: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .controller-grid video:hover {
@@ -268,9 +267,9 @@
         
         <div class="char-container">
             <div class="controller-grid">
-                <video src="videos/Controller.mp4" autoplay loop muted playsinline preload="metadata" loading="lazy"></video>
-                <video src="videos/Controller3.mp4" autoplay loop muted playsinline preload="metadata" loading="lazy"></video>
-                <video src="videos/Controller4.mp4" autoplay loop muted playsinline preload="metadata" loading="lazy"></video>
+                <video src="videos/Controller.mp4" autoplay loop muted playsinline></video>
+                <video src="videos/Controller3.mp4" autoplay loop muted playsinline></video>
+                <video src="videos/Controller4.mp4" autoplay loop muted playsinline></video>
             </div>
         </div>
 
@@ -283,7 +282,7 @@
     <div id="cardModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <video id="gamer-video" loop muted playsinline controls preload="none" style="width:200px; height:200px; margin:0 auto; display:block;">
+            <video id="gamer-video" loop muted playsinline autoplay controls style="width:200px; height:200px; margin:0 auto; display:block;">
                 <source src="videos/Cool Gamer.mp4" type="video/mp4">
                 <source src="videos/Gamer.mov" type="video/quicktime">
                 Your browser does not support the video tag.
@@ -540,21 +539,6 @@
                 if (vf) vf.style.display = 'block';
             });
             gamerVideo.addEventListener('loadeddata', () => { console.log('gamer-video loadeddata, readyState=', gamerVideo.readyState); });
-        }
-
-        // Optimize video loading on mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (isMobile) {
-            // On mobile, load videos sequentially to reduce bandwidth competition
-            const controllerVideos = document.querySelectorAll('.controller-grid video');
-            controllerVideos.forEach((video, index) => {
-                video.preload = 'none'; // Don't preload on mobile
-                // Load videos with a slight delay to stagger loading
-                setTimeout(() => {
-                    video.preload = 'auto';
-                    video.load();
-                }, index * 500);
-            });
         }
 
         // Make controller videos replaceable
