@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -269,30 +269,19 @@
         const customMessage = urlParams.get('message');
         const customDate = urlParams.get('date');
 
-        // Load saved values from localStorage
-        const savedName = localStorage.getItem('birthdayName');
-        const savedMessage = localStorage.getItem('birthdayMessage');
-        const savedDate = localStorage.getItem('birthdayDate');
-
-        // Update name (URL params take precedence over saved values)
+        // Update name if provided
         if (customName) {
             document.getElementById('nameTag').textContent = customName;
-        } else if (savedName) {
-            document.getElementById('nameTag').textContent = savedName;
         }
 
-        // Update message (URL params take precedence over saved values)
+        // Update message if provided
         if (customMessage) {
             document.getElementById('messageText').textContent = customMessage;
-        } else if (savedMessage) {
-            document.getElementById('messageText').textContent = savedMessage;
         }
 
-        // Update date (URL params take precedence over saved values)
+        // Update date if provided
         if (customDate) {
             document.getElementById('dateTag').textContent = customDate;
-        } else if (savedDate) {
-            document.getElementById('dateTag').textContent = savedDate;
         }
 
         // Make name tag editable on click
@@ -314,9 +303,6 @@
                 newNameTag.className = 'name-tag';
                 newNameTag.id = 'nameTag';
                 newNameTag.textContent = newName;
-                
-                // Save to localStorage
-                localStorage.setItem('birthdayName', newName);
                 
                 input.replaceWith(newNameTag);
                 
@@ -352,9 +338,6 @@
                 newDateTag.id = 'dateTag';
                 newDateTag.textContent = newDate;
                 
-                // Save to localStorage
-                localStorage.setItem('birthdayDate', newDate);
-                
                 input.replaceWith(newDateTag);
                 
                 // Re-attach click event to new element
@@ -387,9 +370,6 @@
                 newMessageText.className = 'message';
                 newMessageText.id = 'messageText';
                 newMessageText.textContent = newMessage;
-                
-                // Save to localStorage
-                localStorage.setItem('birthdayMessage', newMessage);
                 
                 textarea.replaceWith(newMessageText);
                 

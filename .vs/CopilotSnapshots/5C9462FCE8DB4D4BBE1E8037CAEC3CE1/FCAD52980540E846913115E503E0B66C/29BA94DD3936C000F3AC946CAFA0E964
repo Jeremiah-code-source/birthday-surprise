@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -387,9 +387,6 @@
                 newMessageText.className = 'message';
                 newMessageText.id = 'messageText';
                 newMessageText.textContent = newMessage;
-                
-                // Save to localStorage
-                localStorage.setItem('birthdayMessage', newMessage);
                 
                 textarea.replaceWith(newMessageText);
                 

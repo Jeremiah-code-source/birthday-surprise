@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -315,9 +315,6 @@
                 newNameTag.id = 'nameTag';
                 newNameTag.textContent = newName;
                 
-                // Save to localStorage
-                localStorage.setItem('birthdayName', newName);
-                
                 input.replaceWith(newNameTag);
                 
                 // Re-attach click event to new element
@@ -352,9 +349,6 @@
                 newDateTag.id = 'dateTag';
                 newDateTag.textContent = newDate;
                 
-                // Save to localStorage
-                localStorage.setItem('birthdayDate', newDate);
-                
                 input.replaceWith(newDateTag);
                 
                 // Re-attach click event to new element
@@ -387,9 +381,6 @@
                 newMessageText.className = 'message';
                 newMessageText.id = 'messageText';
                 newMessageText.textContent = newMessage;
-                
-                // Save to localStorage
-                localStorage.setItem('birthdayMessage', newMessage);
                 
                 textarea.replaceWith(newMessageText);
                 
