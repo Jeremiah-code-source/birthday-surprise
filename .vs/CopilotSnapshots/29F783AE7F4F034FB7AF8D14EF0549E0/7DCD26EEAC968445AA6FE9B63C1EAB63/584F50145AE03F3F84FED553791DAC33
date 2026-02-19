@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -70,27 +70,7 @@
             border-radius: 20px; 
             display: block; 
             margin: 12px auto 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            max-width: fit-content;
-        }
-        .name-tag:hover {
-            background: #005bbf;
-            transform: scale(1.05);
-        }
-        .name-input {
-            background: white;
-            color: #004a9f;
-            border: 2px solid #004a9f;
-            padding: 6px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1rem;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            text-align: center;
-            outline: none;
-            min-width: 200px;
+            font-weight: bold; 
         }
 
         #openBtn { 
@@ -191,55 +171,6 @@
         const heartContainer = document.getElementById("heart-container");
         const gamerVideo = document.getElementById("gamer-video");
         const titleLetters = document.querySelectorAll(".title-letter");
-
-        // Get URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const customName = urlParams.get('name');
-        const customMessage = urlParams.get('message');
-
-        // Update name if provided
-        if (customName) {
-            document.getElementById('nameTag').textContent = customName;
-        }
-
-        // Update message if provided
-        if (customMessage) {
-            document.getElementById('messageText').textContent = customMessage;
-        }
-
-        // Make name tag editable on click
-        const nameTag = document.getElementById('nameTag');
-        nameTag.addEventListener('click', function() {
-            const currentName = nameTag.textContent;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-            input.className = 'name-input';
-            
-            nameTag.replaceWith(input);
-            input.focus();
-            input.select();
-
-            function saveName() {
-                const newName = input.value.trim() || currentName;
-                const newNameTag = document.createElement('div');
-                newNameTag.className = 'name-tag';
-                newNameTag.id = 'nameTag';
-                newNameTag.textContent = newName;
-                
-                input.replaceWith(newNameTag);
-                
-                // Re-attach click event to new element
-                newNameTag.addEventListener('click', arguments.callee.bind(nameTag));
-            }
-
-            input.addEventListener('blur', saveName);
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    saveName();
-                }
-            });
-        });
 
         btn.onclick = () => {
             modal.style.display = "block";

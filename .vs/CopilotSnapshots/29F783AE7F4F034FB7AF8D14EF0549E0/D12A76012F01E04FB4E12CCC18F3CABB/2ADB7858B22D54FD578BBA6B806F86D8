@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -206,40 +206,6 @@
         if (customMessage) {
             document.getElementById('messageText').textContent = customMessage;
         }
-
-        // Make name tag editable on click
-        const nameTag = document.getElementById('nameTag');
-        nameTag.addEventListener('click', function() {
-            const currentName = nameTag.textContent;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-            input.className = 'name-input';
-            
-            nameTag.replaceWith(input);
-            input.focus();
-            input.select();
-
-            function saveName() {
-                const newName = input.value.trim() || currentName;
-                const newNameTag = document.createElement('div');
-                newNameTag.className = 'name-tag';
-                newNameTag.id = 'nameTag';
-                newNameTag.textContent = newName;
-                
-                input.replaceWith(newNameTag);
-                
-                // Re-attach click event to new element
-                newNameTag.addEventListener('click', arguments.callee.bind(nameTag));
-            }
-
-            input.addEventListener('blur', saveName);
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    saveName();
-                }
-            });
-        });
 
         btn.onclick = () => {
             modal.style.display = "block";
