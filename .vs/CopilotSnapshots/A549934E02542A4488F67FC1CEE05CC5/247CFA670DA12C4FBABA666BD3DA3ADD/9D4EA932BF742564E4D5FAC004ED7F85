@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -241,17 +241,7 @@
             }
             #openBtn { padding: 10px 25px; font-size: 0.9rem; }
             .modal-content { padding: 10px; width: 95%; }
-            #gamer-video { 
-                width: 150px !important; 
-                height: 150px !important;
-                min-height: 150px !important;
-            }
-        }
-
-        /* Video specific styles */
-        #gamer-video {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+            #gamer-video { width: 150px !important; height: 150px !important; }
         }
     </style>
 </head>
@@ -293,8 +283,9 @@
     <div id="cardModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <video id="gamer-video" loop muted playsinline controls preload="metadata" style="width:200px; height:200px; margin:0 auto; display:block; background:#667eea;">
+            <video id="gamer-video" loop muted playsinline controls preload="none" style="width:200px; height:200px; margin:0 auto; display:block;">
                 <source src="videos/Cool Gamer.mp4" type="video/mp4">
+                <source src="videos/Gamer.mov" type="video/quicktime">
                 Your browser does not support the video tag.
             </video>
             <div id="video-fallback" style="display:none; margin-top:12px; color:#c00;">
@@ -459,26 +450,15 @@
         btn.onclick = () => {
             modal.style.display = "block";
             if (gamerVideo) {
-                // Force load the video on mobile
-                gamerVideo.load();
                 gamerVideo.currentTime = 0;
-                
-                // Give the video a moment to load before playing
-                setTimeout(() => {
-                    const playPromise = gamerVideo.play();
-                    if (playPromise && playPromise.catch) {
-                        playPromise.catch(err => {
-                            console.error('gamer-video play failed:', err);
-                            // Try playing without muted on mobile (some browsers require user interaction)
-                            gamerVideo.muted = false;
-                            gamerVideo.play().catch(err2 => {
-                                console.error('Second play attempt failed:', err2);
-                                const vf = document.getElementById('video-fallback');
-                                if (vf) vf.style.display = 'block';
-                            });
-                        });
-                    }
-                }, 300);
+                const playPromise = gamerVideo.play();
+                if (playPromise && playPromise.catch) {
+                    playPromise.catch(err => {
+                        console.error('gamer-video play failed:', err);
+                        const vf = document.getElementById('video-fallback');
+                        if (vf) vf.style.display = 'block';
+                    });
+                }
             }
             for (let i = 0; i < 30; i++) { setTimeout(createHeart, i * 60); }
         };
