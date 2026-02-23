@@ -253,11 +253,88 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
         }
+
+        /* Upload progress bar */
+        .upload-progress {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            min-width: 250px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(300px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #004a9f, #005bbf);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .upload-status {
+            font-size: 0.9rem;
+            color: #004a9f;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .sync-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .sync-indicator.active {
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
+<!-- Sync Indicator -->
+<div class="sync-indicator" id="syncIndicator">
+    🔄 Syncing...
+</div>
+
+<div class="container">
         <h1 class="title">
             <span class="title-letter">H</span>
             <span class="title-letter">a</span>
@@ -306,6 +383,12 @@
         </div>
     </div>
 
+    <!-- GitHub Configuration -->
+    <script src="github-config.js"></script>
+    
+    <!-- GitHub Video Service -->
+    <script src="github-video-service.js"></script>
+
     <script>
         const modal = document.getElementById("cardModal");
         const btn = document.getElementById("openBtn");
@@ -313,6 +396,150 @@
         const heartContainer = document.getElementById("heart-container");
         const gamerVideo = document.getElementById("gamer-video");
         const titleLetters = document.querySelectorAll(".title-letter");
+
+        // Initialize GitHub storage
+        let storageEnabled = false;
+        
+        // Try to initialize GitHub storage
+        (async () => {
+            try {
+                if (typeof githubConfig !== 'undefined' && 
+                    githubConfig.owner !== 'YOUR_GITHUB_USERNAME' &&
+                    githubConfig.token !== 'YOUR_GITHUB_TOKEN_HERE') {
+                    
+                    console.log('Attempting GitHub storage initialization...');
+                    storageEnabled = await githubVideoService.initialize(githubConfig);
+                    
+                    if (storageEnabled) {
+                        console.log('GitHub video storage enabled');
+                        document.getElementById('syncIndicator').textContent = '✓ GitHub Sync Active';
+                        document.getElementById('syncIndicator').classList.add('active');
+                        
+                        // Load custom videos from GitHub
+                        await loadCustomVideos();
+                        
+                        // Listen for video updates
+                        setupVideoListeners();
+                        
+                        setTimeout(() => {
+                            document.getElementById('syncIndicator').classList.remove('active');
+                        }, 3000);
+                    } else {
+                        console.log('GitHub storage not configured - using local-only mode');
+                    }
+                } else {
+                    console.log('GitHub not configured - using local-only mode');
+                }
+            } catch (error) {
+                console.error('GitHub storage initialization failed:', error);
+                storageEnabled = false;
+            }
+        })();
+
+        // Load custom videos from GitHub/localStorage
+        async function loadCustomVideos() {
+            const controllerVideos = document.querySelectorAll('.controller-grid video');
+            
+            for (let i = 0; i < controllerVideos.length; i++) {
+                const videoId = `controller${i + 1}`;
+                let videoURL = null;
+                
+                if (storageEnabled) {
+                    videoURL = await githubVideoService.getVideoURL(videoId);
+                } else {
+                    videoURL = localStorage.getItem(`video_${videoId}`);
+                }
+                
+                if (videoURL) {
+                    controllerVideos[i].src = videoURL;
+                    controllerVideos[i].load();
+                }
+            }
+            
+            // Load modal video
+            const modalVideoId = 'gamer';
+            let modalVideoURL = null;
+            
+            if (storageEnabled) {
+                modalVideoURL = await githubVideoService.getVideoURL(modalVideoId);
+            } else {
+                modalVideoURL = localStorage.getItem(`video_${modalVideoId}`);
+            }
+            
+            if (modalVideoURL && gamerVideo) {
+                gamerVideo.querySelector('source').src = modalVideoURL;
+                gamerVideo.load();
+            }
+        }
+
+        // Setup real-time listeners for video updates
+        function setupVideoListeners() {
+            if (!storageEnabled) return;
+            
+            const controllerVideos = document.querySelectorAll('.controller-grid video');
+            
+            controllerVideos.forEach((video, index) => {
+                const videoId = `controller${index + 1}`;
+                githubVideoService.listenForVideoUpdates(videoId, (url) => {
+                    video.src = url;
+                    video.load();
+                    video.play().catch(err => console.log('Auto-play prevented'));
+                    showSyncNotification();
+                });
+            });
+            
+            // Listen for modal video updates
+            githubVideoService.listenForVideoUpdates('gamer', (url) => {
+                if (gamerVideo) {
+                    gamerVideo.querySelector('source').src = url;
+                    gamerVideo.load();
+                    showSyncNotification();
+                }
+            });
+        }
+
+        // Show sync notification
+        function showSyncNotification() {
+            const indicator = document.getElementById('syncIndicator');
+            indicator.textContent = '✓ Video Updated';
+            indicator.classList.add('active');
+            setTimeout(() => {
+                indicator.classList.remove('active');
+            }, 2000);
+        }
+
+        // Show upload progress
+        function showUploadProgress(videoId, progress) {
+            let progressDiv = document.getElementById('uploadProgress');
+            
+            if (!progressDiv) {
+                progressDiv = document.createElement('div');
+                progressDiv.id = 'uploadProgress';
+                progressDiv.className = 'upload-progress';
+                progressDiv.innerHTML = `
+                    <div class="upload-status">Uploading video...</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                `;
+                document.body.appendChild(progressDiv);
+            }
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            
+            if (progress >= 100) {
+                progressDiv.querySelector('.upload-status').textContent = '✓ Upload Complete!';
+                setTimeout(() => {
+                    progressDiv.remove();
+                }, 2000);
+            }
+        }
+
+        // Listen for upload progress events
+        window.addEventListener('videoUploadProgress', (e) => {
+            showUploadProgress(e.detail.videoId, e.detail.progress);
+        });
 
         // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -580,18 +807,46 @@
         // Make controller videos replaceable
         const controllerVideos = document.querySelectorAll('.controller-grid video');
         controllerVideos.forEach((video, index) => {
-            video.addEventListener('click', function() {
+            video.addEventListener('click', async function() {
                 const fileInput = document.createElement('input');
                 fileInput.type = 'file';
                 fileInput.accept = 'video/*';
                 
-                fileInput.addEventListener('change', function(e) {
+                fileInput.addEventListener('change', async function(e) {
                     const file = e.target.files[0];
                     if (file) {
-                        const videoURL = URL.createObjectURL(file);
-                        video.src = videoURL;
+                        const videoId = `controller${index + 1}`;
+                        
+                        // Create local preview immediately
+                        const localURL = URL.createObjectURL(file);
+                        video.src = localURL;
                         video.load();
                         video.play().catch(err => console.error('Video play error:', err));
+                        
+                        // Upload to GitHub storage if enabled
+                        if (storageEnabled) {
+                            try {
+                                console.log('Uploading video to GitHub...');
+                                const cloudURL = await githubVideoService.uploadVideo(file, videoId);
+                                
+                                // Update video source to cloud URL
+                                video.src = cloudURL;
+                                video.load();
+                                video.play().catch(err => console.error('Video play error:', err));
+                                
+                                console.log('Video uploaded and synced successfully!');
+                            } catch (error) {
+                                console.error('GitHub upload failed:', error);
+                                alert('Video uploaded locally but GitHub sync failed. Video won\'t sync across devices.');
+                                
+                                // Save local URL to localStorage as fallback
+                                localStorage.setItem(`video_${videoId}`, localURL);
+                            }
+                        } else {
+                            // Save to localStorage only
+                            localStorage.setItem(`video_${videoId}`, localURL);
+                            console.log('Video saved locally (GitHub not configured)');
+                        }
                     }
                 });
                 
@@ -601,20 +856,48 @@
 
         // Make modal video replaceable
         if (gamerVideo) {
-            gamerVideo.addEventListener('click', function(e) {
+            gamerVideo.addEventListener('click', async function(e) {
                 // Only trigger if not playing/pausing via controls
                 if (e.target === gamerVideo) {
                     const fileInput = document.createElement('input');
                     fileInput.type = 'file';
                     fileInput.accept = 'video/*';
                     
-                    fileInput.addEventListener('change', function(e) {
+                    fileInput.addEventListener('change', async function(e) {
                         const file = e.target.files[0];
                         if (file) {
-                            const videoURL = URL.createObjectURL(file);
-                            gamerVideo.src = videoURL;
+                            const videoId = 'gamer';
+                            
+                            // Create local preview immediately
+                            const localURL = URL.createObjectURL(file);
+                            gamerVideo.src = localURL;
                             gamerVideo.load();
                             gamerVideo.play().catch(err => console.error('Video play error:', err));
+                            
+                            // Upload to GitHub storage if enabled
+                            if (storageEnabled) {
+                                try {
+                                    console.log('Uploading video to GitHub...');
+                                    const cloudURL = await githubVideoService.uploadVideo(file, videoId);
+                                    
+                                    // Update video source to cloud URL
+                                    gamerVideo.src = cloudURL;
+                                    gamerVideo.load();
+                                    gamerVideo.play().catch(err => console.error('Video play error:', err));
+                                    
+                                    console.log('Video uploaded and synced successfully!');
+                                } catch (error) {
+                                    console.error('GitHub upload failed:', error);
+                                    alert('Video uploaded locally but GitHub sync failed. Video won\'t sync across devices.');
+                                    
+                                    // Save local URL to localStorage as fallback
+                                    localStorage.setItem(`video_${videoId}`, localURL);
+                                }
+                            } else {
+                                // Save to localStorage only
+                                localStorage.setItem(`video_${videoId}`, localURL);
+                                console.log('Video saved locally (GitHub not configured)');
+                            }
                         }
                     });
                     

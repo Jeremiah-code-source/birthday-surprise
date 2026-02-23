@@ -1,0 +1,58 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# GitHub config with sensitive tokens
+github-config.js
+
+# Large video files
+videos/*.mp4
+videos/*.mov
+videos/*.webm
+!videos/.gitkeep
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Node modules (if using any)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local storage/cache
+*.cache
+*.log
+
+# Temporary files
+*.tmp
+*.temp
