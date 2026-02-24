@@ -123,7 +123,9 @@ class GitHubVideoService {
             db.videos[videoId] = { url, timestamp: Date.now() };
             db.lastUpdated = Date.now();
             await this.updateDatabaseFile(db);
+            // Keep both keys in sync so stale values never win
             localStorage.setItem(`video_${videoId}`, url);
+            localStorage.setItem(`video_${videoId}_current`, url);
         } catch (error) {
             console.error('Error saving video URL:', error);
             throw error;
@@ -169,12 +171,15 @@ class GitHubVideoService {
             const db = await this.getDatabaseFile();
             if (db.videos[videoId]) {
                 const url = db.videos[videoId].url;
+                // Always overwrite localStorage with the authoritative GitHub value
                 localStorage.setItem(`video_${videoId}`, url);
                 return url;
             }
+            // Only fall back to localStorage when GitHub DB has no entry at all
             return localStorage.getItem(`video_${videoId}`);
         } catch (error) {
             console.error('Error getting video URL:', error);
+            // True offline fallback only
             return localStorage.getItem(`video_${videoId}`);
         }
     }
