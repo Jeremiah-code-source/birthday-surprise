@@ -1,7 +1,6 @@
-// GitHub Storage Configuration
-// Token is stored in localStorage (never hardcoded) for security.
-// Viewers (other devices) only need READ access via public raw URLs - no token required.
-// Only the uploader device needs a token saved in localStorage.
+﻿// GitHub Storage Configuration
+// Uploads go through a Cloudflare Worker (no token ever touches the browser).
+// Reads use the public raw GitHub URL — no token needed on any device.
 
 const githubConfig = {
     // Your GitHub username
@@ -10,13 +9,7 @@ const githubConfig = {
     // Repository name for video storage (must be public)
     repo: "birthday-videos",
 
-    // Token is loaded from localStorage at runtime - never hardcoded here.
-    // Set it once via the ?? setup button on the page.
-    get token() {
-        return localStorage.getItem('github_token') || '';
-    },
-
-    // Branch to use (default: main)
+    // Branch to use
     branch: "main",
 
     // Folder for videos in the repo
@@ -25,19 +18,13 @@ const githubConfig = {
     // Database file (stores video metadata)
     databaseFile: "video-database.json",
 
-    // Public raw base URL for reading without a token (works on all devices)
+    // ── Cloudflare Worker URL ──────────────────────────────────────────────────
+    // After deploying cloudflare-worker.js, paste your worker URL here.
+    // Example: "https://birthday-upload.your-name.workers.dev"
+    workerUrl: "https://birthday-upload.your-name.workers.dev",
+
+    // Public raw base URL for reading (no token, works on all devices)
     get rawBase() {
         return `https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}`;
-    }
-};
-
-// GitHub API endpoints
-const GITHUB_API = {
-    base: "https://api.github.com",
-    repos: function() {
-        return `${this.base}/repos/${githubConfig.owner}/${githubConfig.repo}`;
-    },
-    contents: function(path) {
-        return `${this.repos()}/contents/${path}`;
     }
 };

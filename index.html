@@ -326,66 +326,6 @@
             50% { opacity: 0.7; }
         }
 
-        /* Setup button */
-        #setupBtn {
-            position: fixed;
-            bottom: 18px;
-            right: 18px;
-            background: #004a9f;
-            color: white;
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(0,74,159,0.4);
-            z-index: 500;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #setupBtn:hover { transform: scale(1.1); background: #003a7b; }
-
-        .setup-modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
-        .setup-content {
-            background: #fff;
-            margin: 8% auto;
-            padding: 28px 24px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 420px;
-            position: relative;
-            text-align: center;
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-sizing: border-box;
-        }
-        .setup-content h3 { color: #004a9f; margin-top: 0; }
-        .setup-content p { font-size: 0.88rem; color: #555; margin: 6px 0 16px; }
-        .setup-content input {
-            width: 100%;
-            padding: 10px 14px;
-            border: 2px solid #004a9f;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-family: inherit;
-            box-sizing: border-box;
-            outline: none;
-            margin-bottom: 12px;
-        }
-        .setup-content button.save-btn {
-            background: #004a9f;
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 50px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .setup-content button.save-btn:hover { background: #003a7b; }
-        .setup-status { margin-top: 10px; font-size: 0.85rem; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -441,24 +381,6 @@
             <h3>Level Up! 🎮</h3>
             <p class="message" id="messageText">"You are a very special boy. I wish you all the best, lots of health, and lots of joy. Happy Birthday!"</p>
             <div id="heart-container"></div>
-        </div>
-    </div>
-
-    <!-- Setup button -->
-    <button id="setupBtn" title="GitHub sync setup">⚙️</button>
-
-    <!-- Setup modal -->
-    <div id="setupModal" class="setup-modal">
-        <div class="setup-content">
-            <span class="close" id="setupClose">&times;</span>
-            <h3>🔧 GitHub Sync Setup</h3>
-            <p>Enter your GitHub Personal Access Token to enable video uploads that sync to all devices.<br>
-            Viewers (other devices) <strong>don't need a token</strong> — they sync automatically.</p>
-            <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
-            <br>
-            <button class="save-btn" id="saveTokenBtn">Save Token</button>
-            <button class="save-btn" id="clearTokenBtn" style="background:#c00;margin-left:8px;">Clear Token</button>
-            <div class="setup-status" id="setupStatus"></div>
         </div>
     </div>
 
@@ -903,11 +825,7 @@
                                 console.log('Video uploaded and synced successfully!');
                             } catch (error) {
                                 console.error('GitHub upload failed:', error);
-                                if (error.message && error.message.includes('No write token')) {
-                                    alert('No upload token found. Click the ⚙️ button (bottom-right) to enter your GitHub token.');
-                                } else {
-                                    alert('Upload failed. Video won\'t sync across devices.');
-                                }
+                                alert('Upload failed: ' + error.message);
                                 localStorage.setItem(`video_${videoId}`, localURL);
                             }
                         } else {
@@ -948,11 +866,7 @@
                                     console.log('Video uploaded and synced successfully!');
                                 } catch (error) {
                                     console.error('GitHub upload failed:', error);
-                                    if (error.message && error.message.includes('No write token')) {
-                                        alert('No upload token found. Click the ⚙️ button (bottom-right) to enter your GitHub token.');
-                                    } else {
-                                        alert('Upload failed. Video won\'t sync across devices.');
-                                    }
+                                    alert('Upload failed: ' + error.message);
                                     localStorage.setItem(`video_${videoId}`, localURL);
                                 }
                             } else {
@@ -965,60 +879,6 @@
                 }
             });
         }
-
-        // Setup modal logic
-        const setupBtn = document.getElementById('setupBtn');
-        const setupModal = document.getElementById('setupModal');
-        const setupClose = document.getElementById('setupClose');
-        const tokenInput = document.getElementById('tokenInput');
-        const saveTokenBtn = document.getElementById('saveTokenBtn');
-        const clearTokenBtn = document.getElementById('clearTokenBtn');
-        const setupStatus = document.getElementById('setupStatus');
-
-        setupBtn.addEventListener('click', () => {
-            tokenInput.value = localStorage.getItem('github_token') || '';
-            setupStatus.textContent = '';
-            setupModal.style.display = 'block';
-        });
-        setupClose.addEventListener('click', () => { setupModal.style.display = 'none'; });
-        setupModal.addEventListener('click', (e) => { if (e.target === setupModal) setupModal.style.display = 'none'; });
-
-        saveTokenBtn.addEventListener('click', async () => {
-            const token = tokenInput.value.trim();
-            if (!token) {
-                setupStatus.textContent = '⚠️ Please enter a token.';
-                setupStatus.style.color = '#c00';
-                return;
-            }
-            setupStatus.textContent = 'Verifying token...';
-            setupStatus.style.color = '#004a9f';
-            try {
-                const res = await fetch(
-                    `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}`,
-                    { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
-                );
-                if (res.ok) {
-                    localStorage.setItem('github_token', token);
-                    setupStatus.textContent = '✅ Token saved! Reloading...';
-                    setupStatus.style.color = 'green';
-                    setTimeout(() => location.reload(), 1200);
-                } else {
-                    setupStatus.textContent = `❌ Token invalid (${res.status}). Check scopes & repo name.`;
-                    setupStatus.style.color = '#c00';
-                }
-            } catch (err) {
-                setupStatus.textContent = '❌ Network error. Check your connection.';
-                setupStatus.style.color = '#c00';
-            }
-        });
-
-        clearTokenBtn.addEventListener('click', () => {
-            localStorage.removeItem('github_token');
-            tokenInput.value = '';
-            setupStatus.textContent = '🗑 Token cleared. Reloading...';
-            setupStatus.style.color = '#555';
-            setTimeout(() => location.reload(), 1000);
-        });
     </script>
 </body>
 </html>
