@@ -21,7 +21,7 @@ const githubConfig = {
     // ── Cloudflare Worker URL ──────────────────────────────────────────────────
     // After deploying cloudflare-worker.js, paste your worker URL here.
     // Example: "https://birthday-upload.your-name.workers.dev"
-    workerUrl: "https://birthday-surprise.kenanprins274.workers.dev",
+    workerUrl: "https://birthday-upload.kenanprins274.workers.dev",
 
     // Public raw base URL for reading (no token, works on all devices)
     get rawBase() {

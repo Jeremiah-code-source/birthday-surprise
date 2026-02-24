@@ -26,6 +26,7 @@ const DB_FILE = 'video-database.json';
 // Add your real deployed URL here once you have it.
 const ALLOWED_ORIGINS = [
     'https://birthday-surprise.kenanprins274.workers.dev',
+    'https://birthday-upload.kenanprins274.workers.dev',
     'https://birthday-surprise-ten-lilac.vercel.app',
     'https://jeremiah-code-source.github.io',
     'http://localhost',
