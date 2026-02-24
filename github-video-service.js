@@ -1,89 +1,99 @@
 // GitHub Video Storage Service
-// Replaces Firebase with GitHub for completely free storage
+// READ  — uses public raw.githubusercontent.com URLs (no token, works on every device)
+// WRITE — requires a Personal Access Token stored in localStorage (upload device only)
 
 class GitHubVideoService {
     constructor() {
         this.initialized = false;
         this.config = null;
+        this.canWrite = false; // true only when a valid token is present
     }
 
-    // Initialize GitHub service
+    // Initialize GitHub service.
+    // Always succeeds when the public repo is reachable (read-only mode).
+    // canWrite is set to true only when a token passes the auth check.
     async initialize(config) {
         try {
             this.config = config;
-            
-            // Verify GitHub token works
-            const response = await fetch(`${GITHUB_API.repos()}`, {
-                headers: {
-                    'Authorization': `token ${this.config.token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-            
-            if (response.ok) {
+
+            // Check if the public repo is reachable (no token required)
+            const publicCheck = await fetch(
+                `${this.config.rawBase}/${this.config.databaseFile}`,
+                { cache: 'no-store' }
+            );
+
+            // Repo is reachable (even if the db file doesn't exist yet)
+            if (publicCheck.ok || publicCheck.status === 404) {
                 this.initialized = true;
-                console.log('GitHub storage initialized successfully');
-                
-                // Initialize database file if it doesn't exist
-                await this.initializeDatabase();
-                
-                return true;
+                console.log('GitHub read access confirmed');
             } else {
-                console.error('GitHub authentication failed:', response.status);
+                console.error('GitHub repo not reachable:', publicCheck.status);
                 return false;
             }
+
+            // Try write access if a token is stored
+            const token = this.config.token;
+            if (token) {
+                const authCheck = await fetch(`${GITHUB_API.repos()}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (authCheck.ok) {
+                    this.canWrite = true;
+                    console.log('GitHub write access confirmed');
+                    await this.initializeDatabase();
+                } else {
+                    console.warn('GitHub token invalid – running in read-only mode');
+                }
+            } else {
+                console.log('No GitHub token – running in read-only mode (videos will still sync)');
+            }
+
+            return true;
         } catch (error) {
             console.error('GitHub initialization error:', error);
             return false;
         }
     }
 
-    // Initialize video database file in GitHub
+    // Create the database file in the repo if it doesn't exist yet (write access required)
     async initializeDatabase() {
+        if (!this.canWrite) return;
         try {
-            // Check if database file exists
-            const response = await fetch(
-                GITHUB_API.contents(this.config.databaseFile),
-                {
-                    headers: {
-                        'Authorization': `token ${this.config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                }
-            );
-
-            if (!response.ok && response.status === 404) {
-                // Create empty database
-                const emptyDb = {
-                    videos: {},
-                    lastUpdated: Date.now()
-                };
-                
-                await this.updateDatabaseFile(emptyDb);
-                console.log('Database file created');
+            const rawUrl = `${this.config.rawBase}/${this.config.databaseFile}`;
+            const check = await fetch(rawUrl + '?t=' + Date.now(), { cache: 'no-store' });
+            if (!check.ok) {
+                await this.updateDatabaseFile({ videos: {}, lastUpdated: Date.now() });
+                console.log('Database file created in GitHub repo');
             }
         } catch (error) {
             console.error('Database initialization error:', error);
         }
     }
 
-    // Upload video to GitHub
+    // Upload video to GitHub (requires write token)
     async uploadVideo(file, videoId) {
         if (!this.initialized) {
             throw new Error('GitHub storage not initialized');
         }
+        if (!this.canWrite) {
+            throw new Error('No write token – cannot upload. Enter your token via the ?? setup button.');
+        }
 
         try {
-            // Convert file to base64 (GitHub API requires this)
+            this.updateUploadProgress(videoId, 10);
+
             const base64Content = await this.fileToBase64(file);
-            
-            // Generate unique filename
+            this.updateUploadProgress(videoId, 40);
+
             const filename = `${videoId}_${Date.now()}.mp4`;
             const path = `${this.config.videosFolder}/${filename}`;
-            
-            console.log('Uploading video to GitHub...');
-            
-            // Upload to GitHub
+
+            this.updateUploadProgress(videoId, 60);
+
             const response = await fetch(GITHUB_API.contents(path), {
                 method: 'PUT',
                 headers: {
@@ -103,16 +113,16 @@ class GitHubVideoService {
             }
 
             const data = await response.json();
-            
-            // Get the raw URL for the video
-            const videoURL = data.content.download_url;
-            
-            // Save to database
+            // Use raw URL so other devices can load the video without a token
+            const videoURL = `${this.config.rawBase}/${path}`;
+
+            this.updateUploadProgress(videoId, 85);
             await this.saveVideoURL(videoId, videoURL);
-            
+            this.updateUploadProgress(videoId, 100);
+
             console.log('Video uploaded successfully:', videoURL);
             return videoURL;
-            
+
         } catch (error) {
             console.error('Upload error:', error);
             throw error;
@@ -123,74 +133,52 @@ class GitHubVideoService {
     fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            
             reader.onload = () => {
-                // Remove data URL prefix
                 const base64 = reader.result.split(',')[1];
                 resolve(base64);
             };
-            
             reader.onerror = reject;
             reader.readAsDataURL(file);
         });
     }
 
-    // Save video URL to database
+    // Save video URL to the database in GitHub
     async saveVideoURL(videoId, url) {
+        if (!this.canWrite) throw new Error('No write access');
         try {
-            // Get current database
             const db = await this.getDatabaseFile();
-            
-            // Update with new video
-            db.videos[videoId] = {
-                url: url,
-                timestamp: Date.now()
-            };
+            db.videos[videoId] = { url, timestamp: Date.now() };
             db.lastUpdated = Date.now();
-            
-            // Save back to GitHub
             await this.updateDatabaseFile(db);
-            
-            // Also save to localStorage for offline access
             localStorage.setItem(`video_${videoId}`, url);
-            
         } catch (error) {
             console.error('Error saving video URL:', error);
             throw error;
         }
     }
 
-    // Get database file from GitHub
+    // Read database via public raw URL — no token needed, works on any device
     async getDatabaseFile() {
         try {
-            const response = await fetch(
-                GITHUB_API.contents(this.config.databaseFile),
-                {
-                    headers: {
-                        'Authorization': `token ${this.config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                }
-            );
+            const rawUrl = `${this.config.rawBase}/${this.config.databaseFile}`;
+            const response = await fetch(rawUrl + '?t=' + Date.now(), { cache: 'no-store' });
 
             if (!response.ok) {
-                return { videos: {}, lastUpdated: Date.now() };
+                return { videos: {}, lastUpdated: 0 };
             }
 
-            const data = await response.json();
-            const content = atob(data.content); // Decode base64
-            return JSON.parse(content);
-            
+            return await response.json();
         } catch (error) {
             console.error('Error getting database:', error);
-            return { videos: {}, lastUpdated: Date.now() };
+            return { videos: {}, lastUpdated: 0 };
         }
     }
 
-    // Update database file in GitHub
+    // Write database file via GitHub API (token required)
     async updateDatabaseFile(dbContent) {
+        if (!this.canWrite) throw new Error('No write access');
         try {
-            // Get current file SHA (required for updates)
+            // Need SHA for updates; try the API endpoint to get it
             const currentFile = await fetch(
                 GITHUB_API.contents(this.config.databaseFile),
                 {
@@ -207,19 +195,13 @@ class GitHubVideoService {
                 sha = data.sha;
             }
 
-            // Convert to base64
-            const content = btoa(JSON.stringify(dbContent, null, 2));
-            
-            // Update file
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(dbContent, null, 2))));
             const body = {
                 message: 'Update video database',
-                content: content,
+                content,
                 branch: this.config.branch
             };
-            
-            if (sha) {
-                body.sha = sha;
-            }
+            if (sha) body.sha = sha;
 
             const response = await fetch(
                 GITHUB_API.contents(this.config.databaseFile),
@@ -237,46 +219,39 @@ class GitHubVideoService {
             if (!response.ok) {
                 throw new Error(`Database update failed: ${response.status}`);
             }
-
         } catch (error) {
             console.error('Error updating database:', error);
             throw error;
         }
     }
 
-    // Get video URL from database
+    // Get a single video URL from the database (public read)
     async getVideoURL(videoId) {
         try {
             const db = await this.getDatabaseFile();
-            
             if (db.videos[videoId]) {
                 const url = db.videos[videoId].url;
                 localStorage.setItem(`video_${videoId}`, url);
                 return url;
             }
-            
-            // Fallback to localStorage
             return localStorage.getItem(`video_${videoId}`);
-            
         } catch (error) {
             console.error('Error getting video URL:', error);
             return localStorage.getItem(`video_${videoId}`);
         }
     }
 
-    // Listen for video updates (polling-based since GitHub doesn't have real-time)
-    listenForVideoUpdates(videoId, callback, interval = 5000) {
+    // Poll for video updates (works without a token — purely public reads)
+    listenForVideoUpdates(videoId, callback, interval = 8000) {
         if (!this.initialized) {
             console.warn('GitHub storage not initialized');
             return;
         }
 
-        // Poll for changes every 5 seconds
         const pollInterval = setInterval(async () => {
             try {
                 const url = await this.getVideoURL(videoId);
                 const currentUrl = localStorage.getItem(`video_${videoId}_current`);
-                
                 if (url && url !== currentUrl) {
                     localStorage.setItem(`video_${videoId}_current`, url);
                     callback(url);
@@ -286,42 +261,33 @@ class GitHubVideoService {
             }
         }, interval);
 
-        // Return function to stop polling
         return () => clearInterval(pollInterval);
     }
 
-    // Delete video from GitHub
+    // Delete video from GitHub (write access required)
     async deleteVideo(videoId) {
+        if (!this.canWrite) throw new Error('No write access');
         try {
             const db = await this.getDatabaseFile();
             const videoData = db.videos[videoId];
-            
             if (!videoData) {
                 console.log('Video not found in database');
                 return;
             }
 
-            // Extract path from URL
-            const url = new URL(videoData.url);
-            const pathParts = url.pathname.split('/');
-            const filename = pathParts[pathParts.length - 1];
-            const path = `${this.config.videosFolder}/${filename}`;
+            // Derive the repo-relative path from the raw URL
+            const rawBase = this.config.rawBase + '/';
+            let path = videoData.url.replace(rawBase, '');
 
-            // Get file info
-            const fileResponse = await fetch(
-                GITHUB_API.contents(path),
-                {
-                    headers: {
-                        'Authorization': `token ${this.config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
+            const fileResponse = await fetch(GITHUB_API.contents(path), {
+                headers: {
+                    'Authorization': `token ${this.config.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
                 }
-            );
+            });
 
             if (fileResponse.ok) {
                 const fileData = await fileResponse.json();
-                
-                // Delete file
                 await fetch(GITHUB_API.contents(path), {
                     method: 'DELETE',
                     headers: {
@@ -337,32 +303,24 @@ class GitHubVideoService {
                 });
             }
 
-            // Remove from database
             delete db.videos[videoId];
             await this.updateDatabaseFile(db);
-            
-            // Remove from localStorage
             localStorage.removeItem(`video_${videoId}`);
-            
             console.log('Video deleted successfully');
-            
         } catch (error) {
             console.error('Error deleting video:', error);
             throw error;
         }
     }
 
-    // Check if GitHub storage is available
     isAvailable() {
         return this.initialized;
     }
 
-    // Update upload progress (simulated for GitHub)
     updateUploadProgress(videoId, progress) {
-        const event = new CustomEvent('videoUploadProgress', {
+        window.dispatchEvent(new CustomEvent('videoUploadProgress', {
             detail: { videoId, progress }
-        });
-        window.dispatchEvent(event);
+        }));
     }
 }
 

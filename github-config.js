@@ -1,25 +1,34 @@
 // GitHub Storage Configuration
-// This replaces Firebase for completely free video storage
+// Token is stored in localStorage (never hardcoded) for security.
+// Viewers (other devices) only need READ access via public raw URLs - no token required.
+// Only the uploader device needs a token saved in localStorage.
 
 const githubConfig = {
     // Your GitHub username
     owner: "Jeremiah-code-source",
-    
-    // Repository name (will be created in setup)
+
+    // Repository name for video storage (must be public)
     repo: "birthday-videos",
-    
-    // Personal Access Token (will be generated in setup)
-    // Keep this private! Don't share publicly
-    token: "YOUR_GITHUB_TOKEN_HERE",
-    
+
+    // Token is loaded from localStorage at runtime - never hardcoded here.
+    // Set it once via the ?? setup button on the page.
+    get token() {
+        return localStorage.getItem('github_token') || '';
+    },
+
     // Branch to use (default: main)
     branch: "main",
-    
+
     // Folder for videos in the repo
     videosFolder: "videos",
-    
+
     // Database file (stores video metadata)
-    databaseFile: "video-database.json"
+    databaseFile: "video-database.json",
+
+    // Public raw base URL for reading without a token (works on all devices)
+    get rawBase() {
+        return `https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}`;
+    }
 };
 
 // GitHub API endpoints

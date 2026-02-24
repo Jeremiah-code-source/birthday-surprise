@@ -325,6 +325,67 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
+
+        /* Setup button */
+        #setupBtn {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            background: #004a9f;
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,74,159,0.4);
+            z-index: 500;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #setupBtn:hover { transform: scale(1.1); background: #003a7b; }
+
+        .setup-modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .setup-content {
+            background: #fff;
+            margin: 8% auto;
+            padding: 28px 24px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 420px;
+            position: relative;
+            text-align: center;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-sizing: border-box;
+        }
+        .setup-content h3 { color: #004a9f; margin-top: 0; }
+        .setup-content p { font-size: 0.88rem; color: #555; margin: 6px 0 16px; }
+        .setup-content input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #004a9f;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .setup-content button.save-btn {
+            background: #004a9f;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .setup-content button.save-btn:hover { background: #003a7b; }
+        .setup-status { margin-top: 10px; font-size: 0.85rem; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -383,6 +444,24 @@
         </div>
     </div>
 
+    <!-- Setup button -->
+    <button id="setupBtn" title="GitHub sync setup">⚙️</button>
+
+    <!-- Setup modal -->
+    <div id="setupModal" class="setup-modal">
+        <div class="setup-content">
+            <span class="close" id="setupClose">&times;</span>
+            <h3>🔧 GitHub Sync Setup</h3>
+            <p>Enter your GitHub Personal Access Token to enable video uploads that sync to all devices.<br>
+            Viewers (other devices) <strong>don't need a token</strong> — they sync automatically.</p>
+            <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+            <br>
+            <button class="save-btn" id="saveTokenBtn">Save Token</button>
+            <button class="save-btn" id="clearTokenBtn" style="background:#c00;margin-left:8px;">Clear Token</button>
+            <div class="setup-status" id="setupStatus"></div>
+        </div>
+    </div>
+
     <!-- GitHub Configuration -->
     <script src="github-config.js"></script>
     
@@ -400,38 +479,30 @@
         // Initialize GitHub storage
         let storageEnabled = false;
         
-        // Try to initialize GitHub storage
+        // Initialize GitHub storage (always attempted; works read-only without a token)
         (async () => {
             try {
-                if (typeof githubConfig !== 'undefined' && 
-                    githubConfig.owner !== 'YOUR_GITHUB_USERNAME' &&
-                    githubConfig.token !== 'YOUR_GITHUB_TOKEN_HERE') {
-                    
-                    console.log('Attempting GitHub storage initialization...');
-                    storageEnabled = await githubVideoService.initialize(githubConfig);
-                    
-                    if (storageEnabled) {
-                        console.log('GitHub video storage enabled');
-                        document.getElementById('syncIndicator').textContent = '✓ GitHub Sync Active';
-                        document.getElementById('syncIndicator').classList.add('active');
-                        
-                        // Load custom videos from GitHub
-                        await loadCustomVideos();
-                        
-                        // Listen for video updates
-                        setupVideoListeners();
-                        
-                        setTimeout(() => {
-                            document.getElementById('syncIndicator').classList.remove('active');
-                        }, 3000);
-                    } else {
-                        console.log('GitHub storage not configured - using local-only mode');
-                    }
+                console.log('Initializing GitHub sync...');
+                storageEnabled = await githubVideoService.initialize(githubConfig);
+
+                if (storageEnabled) {
+                    const canWrite = githubVideoService.canWrite;
+                    const indicator = document.getElementById('syncIndicator');
+                    indicator.textContent = canWrite ? '✓ GitHub Sync Active' : '👁 GitHub Read-Only Sync';
+                    indicator.classList.add('active');
+
+                    // Load videos synced from GitHub
+                    await loadCustomVideos();
+
+                    // Poll for updates from other devices
+                    setupVideoListeners();
+
+                    setTimeout(() => indicator.classList.remove('active'), 3000);
                 } else {
-                    console.log('GitHub not configured - using local-only mode');
+                    console.log('GitHub not reachable – using local-only mode');
                 }
             } catch (error) {
-                console.error('GitHub storage initialization failed:', error);
+                console.error('GitHub initialization failed:', error);
                 storageEnabled = false;
             }
         })();
@@ -811,45 +882,40 @@
                 const fileInput = document.createElement('input');
                 fileInput.type = 'file';
                 fileInput.accept = 'video/*';
-                
+
                 fileInput.addEventListener('change', async function(e) {
                     const file = e.target.files[0];
                     if (file) {
                         const videoId = `controller${index + 1}`;
-                        
-                        // Create local preview immediately
+
+                        // Show local preview immediately
                         const localURL = URL.createObjectURL(file);
                         video.src = localURL;
                         video.load();
                         video.play().catch(err => console.error('Video play error:', err));
-                        
-                        // Upload to GitHub storage if enabled
+
                         if (storageEnabled) {
                             try {
-                                console.log('Uploading video to GitHub...');
                                 const cloudURL = await githubVideoService.uploadVideo(file, videoId);
-                                
-                                // Update video source to cloud URL
                                 video.src = cloudURL;
                                 video.load();
                                 video.play().catch(err => console.error('Video play error:', err));
-                                
                                 console.log('Video uploaded and synced successfully!');
                             } catch (error) {
                                 console.error('GitHub upload failed:', error);
-                                alert('Video uploaded locally but GitHub sync failed. Video won\'t sync across devices.');
-                                
-                                // Save local URL to localStorage as fallback
+                                if (error.message && error.message.includes('No write token')) {
+                                    alert('No upload token found. Click the ⚙️ button (bottom-right) to enter your GitHub token.');
+                                } else {
+                                    alert('Upload failed. Video won\'t sync across devices.');
+                                }
                                 localStorage.setItem(`video_${videoId}`, localURL);
                             }
                         } else {
-                            // Save to localStorage only
                             localStorage.setItem(`video_${videoId}`, localURL);
-                            console.log('Video saved locally (GitHub not configured)');
                         }
                     }
                 });
-                
+
                 fileInput.click();
             });
         });
@@ -857,54 +923,102 @@
         // Make modal video replaceable
         if (gamerVideo) {
             gamerVideo.addEventListener('click', async function(e) {
-                // Only trigger if not playing/pausing via controls
                 if (e.target === gamerVideo) {
                     const fileInput = document.createElement('input');
                     fileInput.type = 'file';
                     fileInput.accept = 'video/*';
-                    
+
                     fileInput.addEventListener('change', async function(e) {
                         const file = e.target.files[0];
                         if (file) {
                             const videoId = 'gamer';
-                            
-                            // Create local preview immediately
+
+                            // Show local preview immediately
                             const localURL = URL.createObjectURL(file);
                             gamerVideo.src = localURL;
                             gamerVideo.load();
                             gamerVideo.play().catch(err => console.error('Video play error:', err));
-                            
-                            // Upload to GitHub storage if enabled
+
                             if (storageEnabled) {
                                 try {
-                                    console.log('Uploading video to GitHub...');
                                     const cloudURL = await githubVideoService.uploadVideo(file, videoId);
-                                    
-                                    // Update video source to cloud URL
                                     gamerVideo.src = cloudURL;
                                     gamerVideo.load();
                                     gamerVideo.play().catch(err => console.error('Video play error:', err));
-                                    
                                     console.log('Video uploaded and synced successfully!');
                                 } catch (error) {
                                     console.error('GitHub upload failed:', error);
-                                    alert('Video uploaded locally but GitHub sync failed. Video won\'t sync across devices.');
-                                    
-                                    // Save local URL to localStorage as fallback
+                                    if (error.message && error.message.includes('No write token')) {
+                                        alert('No upload token found. Click the ⚙️ button (bottom-right) to enter your GitHub token.');
+                                    } else {
+                                        alert('Upload failed. Video won\'t sync across devices.');
+                                    }
                                     localStorage.setItem(`video_${videoId}`, localURL);
                                 }
                             } else {
-                                // Save to localStorage only
                                 localStorage.setItem(`video_${videoId}`, localURL);
-                                console.log('Video saved locally (GitHub not configured)');
                             }
                         }
                     });
-                    
+
                     fileInput.click();
                 }
             });
         }
+
+        // Setup modal logic
+        const setupBtn = document.getElementById('setupBtn');
+        const setupModal = document.getElementById('setupModal');
+        const setupClose = document.getElementById('setupClose');
+        const tokenInput = document.getElementById('tokenInput');
+        const saveTokenBtn = document.getElementById('saveTokenBtn');
+        const clearTokenBtn = document.getElementById('clearTokenBtn');
+        const setupStatus = document.getElementById('setupStatus');
+
+        setupBtn.addEventListener('click', () => {
+            tokenInput.value = localStorage.getItem('github_token') || '';
+            setupStatus.textContent = '';
+            setupModal.style.display = 'block';
+        });
+        setupClose.addEventListener('click', () => { setupModal.style.display = 'none'; });
+        setupModal.addEventListener('click', (e) => { if (e.target === setupModal) setupModal.style.display = 'none'; });
+
+        saveTokenBtn.addEventListener('click', async () => {
+            const token = tokenInput.value.trim();
+            if (!token) {
+                setupStatus.textContent = '⚠️ Please enter a token.';
+                setupStatus.style.color = '#c00';
+                return;
+            }
+            setupStatus.textContent = 'Verifying token...';
+            setupStatus.style.color = '#004a9f';
+            try {
+                const res = await fetch(
+                    `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}`,
+                    { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+                );
+                if (res.ok) {
+                    localStorage.setItem('github_token', token);
+                    setupStatus.textContent = '✅ Token saved! Reloading...';
+                    setupStatus.style.color = 'green';
+                    setTimeout(() => location.reload(), 1200);
+                } else {
+                    setupStatus.textContent = `❌ Token invalid (${res.status}). Check scopes & repo name.`;
+                    setupStatus.style.color = '#c00';
+                }
+            } catch (err) {
+                setupStatus.textContent = '❌ Network error. Check your connection.';
+                setupStatus.style.color = '#c00';
+            }
+        });
+
+        clearTokenBtn.addEventListener('click', () => {
+            localStorage.removeItem('github_token');
+            tokenInput.value = '';
+            setupStatus.textContent = '🗑 Token cleared. Reloading...';
+            setupStatus.style.color = '#555';
+            setTimeout(() => location.reload(), 1000);
+        });
     </script>
 </body>
 </html>
