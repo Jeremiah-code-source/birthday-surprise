@@ -43,12 +43,17 @@ export default {
             return corsResponse(null, 204, origin);
         }
 
+        const url = new URL(request.url);
+        const action = url.pathname.replace(/^\//, ''); // 'upload', 'update-db', or 'db'
+
+        // GET /db — read database bypassing CDN cache (no token needed but routed here to avoid caching)
+        if (request.method === 'GET' && action === 'db') {
+            return await handleReadDb(request, env, origin);
+        }
+
         if (request.method !== 'POST') {
             return corsResponse(JSON.stringify({ error: 'Method not allowed' }), 405, origin);
         }
-
-        const url = new URL(request.url);
-        const action = url.pathname.replace(/^\//, ''); // "upload" or "update-db"
 
         try {
             if (action === 'upload') {
@@ -63,6 +68,28 @@ export default {
         }
     }
 };
+
+// ── Read video-database.json via GitHub API (no CDN cache) ───────────────────
+async function handleReadDb(request, env, origin) {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DB_FILE}`;
+
+    const getResponse = await fetch(apiUrl, {
+        headers: githubHeaders(env.GITHUB_TOKEN)
+    });
+
+    if (!getResponse.ok) {
+        // Return empty DB if file doesn't exist yet
+        if (getResponse.status === 404) {
+            return corsResponse(JSON.stringify({ videos: {}, lastUpdated: 0 }), 200, origin);
+        }
+        return corsResponse(JSON.stringify({ error: `GitHub read failed: ${getResponse.status}` }), 502, origin);
+    }
+
+    const data = await getResponse.json();
+    // Content is base64-encoded by GitHub API
+    const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+    return corsResponse(decoded, 200, origin);
+}
 
 // ── Upload a video file to GitHub ─────────────────────────────────────────────
 async function handleUpload(request, env, origin) {
@@ -146,11 +173,11 @@ function githubHeaders(token) {
 }
 
 function corsResponse(body, status, origin) {
-    const isAllowed = ALLOWED_ORIGINS.some(o => origin.startsWith(o));
+    const isAllowed = !origin || ALLOWED_ORIGINS.some(o => origin.startsWith(o));
     const headers = {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Origin': isAllowed ? (origin || '*') : ALLOWED_ORIGINS[0],
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
     };
     return new Response(body, { status, headers });

@@ -132,8 +132,20 @@ class GitHubVideoService {
         }
     }
 
-    // Read database via public raw URL — no token, works on any device
+    // Read database via the Worker (bypasses raw CDN cache) with raw URL as fallback
     async getDatabaseFile() {
+        // If the worker is configured, read through it to avoid CDN caching delays
+        if (this.config.workerUrl && this.config.workerUrl !== 'YOUR_WORKER_URL_HERE') {
+            try {
+                const response = await fetch(`${this.config.workerUrl}/db`, { cache: 'no-store' });
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (error) {
+                console.warn('Worker DB read failed, falling back to raw URL:', error);
+            }
+        }
+        // Fallback: raw public URL (may be cached up to ~5 min)
         try {
             const rawUrl = `${this.config.rawBase}/${this.config.databaseFile}`;
             const response = await fetch(rawUrl + '?t=' + Date.now(), { cache: 'no-store' });
