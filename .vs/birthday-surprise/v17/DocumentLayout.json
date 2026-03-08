@@ -3,15 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:github-config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\cloudflare-worker.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:cloudflare-worker.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\Documents\\birthday-surprise\\video-sync-service.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-video-service.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
@@ -20,6 +13,13 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:github-config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\Documents\\birthday-surprise\\video-sync-service.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -29,7 +29,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -41,45 +41,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "cloudflare-worker.js",
               "DocumentMoniker": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\cloudflare-worker.js",
               "RelativeDocumentMoniker": "cloudflare-worker.js",
               "ToolTip": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\cloudflare-worker.js",
               "RelativeToolTip": "cloudflare-worker.js",
-              "ViewState": "AgIAAHYAAAAAAAAAAADwv3sAAAAtAAAAAAAAAA==",
+              "ViewState": "AgIAAI8AAAAAAAAAAAAIwKUAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-02-24T08:03:32.347Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "github-video-service.js",
               "DocumentMoniker": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-video-service.js",
               "RelativeDocumentMoniker": "github-video-service.js",
               "ToolTip": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-video-service.js",
               "RelativeToolTip": "github-video-service.js",
-              "ViewState": "AgIAAMEAAAAAamZmZmYkwNgAAAA0AAAAAAAAAA==",
+              "ViewState": "AgIAAHEAAAAAAAAAAAAMwOkAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-02-23T08:37:11.242Z"
+              "WhenOpened": "2026-02-23T08:37:11.242Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "github-config.js",
               "DocumentMoniker": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-config.js",
               "RelativeDocumentMoniker": "github-config.js",
               "ToolTip": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-config.js",
               "RelativeToolTip": "github-config.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAABBAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAABdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-02-23T08:36:41.83Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "video-sync-service.js",
               "DocumentMoniker": "C:\\Users\\Kenan Prins\\Documents\\birthday-surprise\\video-sync-service.js",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\Documents\\birthday-surprise\\video-sync-service.js",
@@ -90,15 +91,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "index.html",
               "DocumentMoniker": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\index.html",
               "RelativeDocumentMoniker": "index.html",
               "ToolTip": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\index.html",
               "RelativeToolTip": "index.html",
-              "ViewState": "AgIAADMBAAAAAAAAAAAQwA8AAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAACcDAAAAAAAAAAAAAA8AAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-02-19T12:02:09.501Z"
+              "WhenOpened": "2026-02-19T12:02:09.501Z",
+              "EditorCaption": ""
             }
           ]
         }
