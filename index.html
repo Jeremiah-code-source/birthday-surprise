@@ -312,6 +312,7 @@
         </div>
     </div>
 
+    <script src="github-config.js"></script>
     <script>
         const modal = document.getElementById("cardModal");
         const btn = document.getElementById("openBtn");
@@ -320,28 +321,89 @@
         const gamerVideo = document.getElementById("gamer-video");
         const titleLetters = document.querySelectorAll(".title-letter");
 
-        // Get URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const customName = urlParams.get('name');
-        const customMessage = urlParams.get('message');
+        // Use worker URL from config when available
+        const WORKER_URL = (typeof githubConfig !== 'undefined' && githubConfig.workerUrl)
+            ? githubConfig.workerUrl
+            : '';
 
-        // Load saved values from localStorage
-        const savedName = localStorage.getItem('birthdayName');
-        const savedMessage = localStorage.getItem('birthdayMessage');
-
-        // Update name (URL params take precedence over saved values)
-        if (customName) {
-            document.getElementById('nameTag').textContent = customName;
-        } else if (savedName) {
-            document.getElementById('nameTag').textContent = savedName;
+        async function fetchRemoteProfile() {
+            if (!WORKER_URL) return null;
+            try {
+                const response = await fetch(`${WORKER_URL}/db`, { cache: 'no-store' });
+                if (!response.ok) return null;
+                const db = await response.json();
+                return db.profile || null;
+            } catch (error) {
+                console.error('Failed to fetch remote profile:', error);
+                return null;
+            }
         }
 
-        // Update message (URL params take precedence over saved values)
-        if (customMessage) {
-            document.getElementById('messageText').textContent = customMessage;
-        } else if (savedMessage) {
-            document.getElementById('messageText').textContent = savedMessage;
+        async function saveRemoteName(name) {
+            if (!WORKER_URL) return;
+            try {
+                // Load current database so we do not lose video entries
+                let db = { videos: {}, lastUpdated: 0 };
+                try {
+                    const response = await fetch(`${WORKER_URL}/db`, { cache: 'no-store' });
+                    if (response.ok) {
+                        db = await response.json();
+                    }
+                } catch (readError) {
+                    console.warn('Failed to read DB before saving name, creating new one:', readError);
+                }
+
+                if (!db.videos) db.videos = {};
+                db.profile = db.profile || {};
+                db.profile.name = name;
+                db.lastUpdated = Date.now();
+
+                await fetch(`${WORKER_URL}/update-db`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dbContent: db })
+                });
+            } catch (error) {
+                console.error('Failed to save remote name:', error);
+            }
         }
+
+        (async function initPersonalization() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const customName = urlParams.get('name');
+            const customMessage = urlParams.get('message');
+
+            const savedName = localStorage.getItem('birthdayName');
+            const savedMessage = localStorage.getItem('birthdayMessage');
+
+            const nameTagEl = document.getElementById('nameTag');
+            const messageEl = document.getElementById('messageText');
+
+            let remoteProfile = null;
+            if (!customName) {
+                remoteProfile = await fetchRemoteProfile();
+            }
+
+            // Name precedence: URL param > remote profile > local saved > HTML default
+            if (customName && nameTagEl) {
+                nameTagEl.textContent = customName;
+                localStorage.setItem('birthdayName', customName);
+                saveRemoteName(customName);
+            } else if (remoteProfile && remoteProfile.name && nameTagEl) {
+                nameTagEl.textContent = remoteProfile.name;
+                localStorage.setItem('birthdayName', remoteProfile.name);
+            } else if (savedName && nameTagEl) {
+                nameTagEl.textContent = savedName;
+            }
+
+            // Message precedence: URL param > local saved > HTML default
+            if (customMessage && messageEl) {
+                messageEl.textContent = customMessage;
+                localStorage.setItem('birthdayMessage', customMessage);
+            } else if (savedMessage && messageEl) {
+                messageEl.textContent = savedMessage;
+            }
+        })();
 
         // Make name tag editable on click
         const nameTag = document.getElementById('nameTag');
@@ -365,6 +427,8 @@
                 
                 // Save to localStorage
                 localStorage.setItem('birthdayName', newName);
+                // Save globally so the last used name is shared across devices
+                saveRemoteName(newName);
                 
                 input.replaceWith(newNameTag);
                 
