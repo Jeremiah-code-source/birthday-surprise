@@ -3,7 +3,7 @@
 
 const githubConfig = {
     // Your GitHub username
-    owner: "YOUR_GITHUB_USERNAME",
+    owner: "Jeremiah-code-source",
     
     // Repository name (will be created in setup)
     repo: "birthday-videos",

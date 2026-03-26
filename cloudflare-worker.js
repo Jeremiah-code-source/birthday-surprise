@@ -9,7 +9,7 @@
  * 1. Go to https://workers.cloudflare.com/ and sign in (free account is fine)
  * 2. Click "Create Worker", paste this entire file, click "Save and Deploy"
  * 3. Go to the worker's Settings → Variables → add a Secret:
- *      Name:  GITHUB_TOKEN
+ *      Name:  GITHUB_TOKEN (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)
  *      Value: your GitHub Personal Access Token (ghp_...)
  * 4. Copy the worker URL (looks like: https://birthday-upload.YOUR-NAME.workers.dev)
  * 5. Paste that URL into github-config.js → workerUrl

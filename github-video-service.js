@@ -30,7 +30,7 @@ class GitHubVideoService {
             }
 
             // Check if a Worker URL is configured for writes
-            if (this.config.workerUrl && this.config.workerUrl !== 'YOUR_WORKER_URL_HERE') {
+            if (this.config.workerUrl && this.config.workerUrl !== 'birthday-video-upload.kenanprins274.workers.dev') {
                 this.canWrite = true;
                 console.log('Cloudflare Worker configured — anyone can upload');
                 await this.initializeDatabase();
