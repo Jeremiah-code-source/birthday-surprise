@@ -135,7 +135,7 @@ class GitHubVideoService {
     // Read database via the Worker (bypasses raw CDN cache) with raw URL as fallback
     async getDatabaseFile() {
         // If the worker is configured, read through it to avoid CDN caching delays
-        if (this.config.workerUrl && this.config.workerUrl !== 'YOUR_WORKER_URL_HERE') {
+        if (this.config.workerUrl && this.config.workerUrl !== 'https://birthday-upload.kenanprins274.workers.dev') {
             try {
                 const response = await fetch(`${this.config.workerUrl}/db`, { cache: 'no-store' });
                 if (response.ok) {
