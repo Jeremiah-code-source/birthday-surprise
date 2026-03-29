@@ -15,7 +15,7 @@ const githubConfig = {
     databaseFile: "video-database.json",
 
     // Your live Cloudflare Worker URL
-    workerUrl: "https://birthday-upload.kenanprins274.workers.dev",
+    workerUrl: "https://birthday-video-upload.kenanprins274.workers.dev",
 
     // Public raw base URL for reading
     get rawBase() {
