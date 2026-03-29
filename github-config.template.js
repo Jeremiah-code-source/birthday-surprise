@@ -1,25 +1,24 @@
-// GitHub Storage Configuration Template
-// Copy this file to 'github-config.js' and fill in your details
-
 const githubConfig = {
     // Your GitHub username
     owner: "Jeremiah-code-source",
-    
-    // Repository name (will be created in setup)
+
+    // Repository name for video storage
     repo: "birthday-videos",
-    
-    // Personal Access Token (will be generated in setup)
-    // Keep this private! Don't share publicly
-    // Generate at: https://github.com/settings/tokens
-    // Required scopes: repo (full control of private repositories)
-    token: "YOUR_GITHUB_TOKEN_HERE",
-    
-    // Branch to use (default: main)
+
+    // Branch to use
     branch: "main",
-    
+
     // Folder for videos in the repo
     videosFolder: "videos",
-    
-    // Cache duration in milliseconds (24 hours)
-    cacheDuration: 24 * 60 * 60 * 1000
+
+    // Database file (stores video metadata)
+    databaseFile: "video-database.json",
+
+    // Your live Cloudflare Worker URL
+    workerUrl: "https://birthday-upload.kenanprins274.workers.dev",
+
+    // Public raw base URL for reading
+    get rawBase() {
+        return `https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}`;
+    }
 };

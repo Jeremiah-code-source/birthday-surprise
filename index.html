@@ -16,9 +16,26 @@
             align-items: center;
             min-height: 100vh;
         }
-        .container { text-align: center; width: 100%; padding: 10px; box-sizing: border-box; }
-        .title { font-size: clamp(1.5rem, 8vw, 3.5rem); color: #d63384; text-shadow: 2px 2px white; margin: 0; word-break: break-word; }
-        .title-letter { cursor: pointer; display: inline-block; }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .title {
+            font-size: clamp(1.5rem, 8vw, 3.5rem);
+            color: #d63384;
+            text-shadow: 2px 2px white;
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .title-letter {
+            cursor: pointer;
+            display: inline-block;
+        }
 
         .shape-symbol {
             position: absolute;
@@ -30,30 +47,34 @@
         }
 
         @keyframes floatShape {
-            0% { 
-                transform: translate(0, 0) scale(1) rotate(0deg); 
-                opacity: 1; 
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
             }
-            100% { 
-                transform: translate(var(--tx), var(--ty)) scale(0.5) rotate(var(--rotate)); 
-                opacity: 0; 
+
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0.5) rotate(var(--rotate));
+                opacity: 0;
             }
         }
-        .date { 
-            background: #004a9f; 
-            color: white; 
-            padding: 5px 15px; 
-            border-radius: 20px; 
-            font-weight: bold; 
-            display: inline-block; 
+
+        .date {
+            background: #004a9f;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
             margin-bottom: 10px;
             cursor: pointer;
             transition: 0.3s;
         }
-        .date:hover {
-            background: #005bbf;
-            transform: scale(1.05);
-        }
+
+            .date:hover {
+                background: #005bbf;
+                transform: scale(1.05);
+            }
+
         .date-input {
             background: white;
             color: #004a9f;
@@ -67,12 +88,12 @@
             outline: none;
             min-width: 180px;
         }
-        
+
         /* Ensuring the controller container is large enough and centered */
-        .char-container { 
-            margin: 10px auto; 
-            position: relative; 
-            width: 100%; 
+        .char-container {
+            margin: 10px auto;
+            position: relative;
+            width: 100%;
             max-width: 600px;
             height: auto;
             min-height: 150px;
@@ -93,43 +114,48 @@
             flex-wrap: wrap;
         }
 
-        .controller-grid video {
-            flex: 1 1 0;
-            height: 100%;
-            min-height: 150px;
-            max-height: 220px;
-            object-fit: contain;
-            cursor: pointer;
-            transition: 0.3s;
-            border: 3px solid transparent;
-            border-radius: 10px;
-            min-width: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .controller-grid video:hover {
-            border-color: #004a9f;
-            transform: scale(1.05);
-        }
-        
-        #controller-lottie { width: 100%; height: 100%; }
+            .controller-grid video {
+                flex: 1 1 0;
+                height: 100%;
+                min-height: 150px;
+                max-height: 220px;
+                object-fit: contain;
+                cursor: pointer;
+                transition: 0.3s;
+                border: 3px solid transparent;
+                border-radius: 10px;
+                min-width: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
 
-        .name-tag { 
-            background: #004a9f; 
-            color: white; 
-            padding: 6px 20px; 
-            border-radius: 20px; 
-            display: block; 
+                .controller-grid video:hover {
+                    border-color: #004a9f;
+                    transform: scale(1.05);
+                }
+
+        #controller-lottie {
+            width: 100%;
+            height: 100%;
+        }
+
+        .name-tag {
+            background: #004a9f;
+            color: white;
+            padding: 6px 20px;
+            border-radius: 20px;
+            display: block;
             margin: 12px auto 8px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
             max-width: fit-content;
         }
-        .name-tag:hover {
-            background: #005bbf;
-            transform: scale(1.05);
-        }
+
+            .name-tag:hover {
+                background: #005bbf;
+                transform: scale(1.05);
+            }
+
         .name-input {
             background: white;
             color: #004a9f;
@@ -144,52 +170,80 @@
             min-width: 200px;
         }
 
-        #openBtn { 
-            background-color: #004a9f; 
-            color: white; 
-            border: none; 
-            padding: 15px 40px; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-size: 1.2rem; 
-            transition: 0.3s; 
-            box-shadow: 0 5px 15px rgba(0, 74, 159, 0.3); 
+        #openBtn {
+            background-color: #004a9f;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 74, 159, 0.3);
             display: block;
             margin: 0 auto;
         }
-        #openBtn:hover { transform: scale(1.1); background-color: #003a7b; }
 
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
-        .modal-content { 
-            background-color: #fff; 
-            margin: 5% auto; 
-            padding: 20px; 
-            border-radius: 25px; 
-            width: 90%; 
-            max-width: 500px; 
-            position: relative; 
-            text-align: center; 
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            #openBtn:hover {
+                transform: scale(1.1);
+                background-color: #003a7b;
+            }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            text-align: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-sizing: border-box;
             max-height: 90vh;
             overflow-y: auto;
         }
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        
-        .message { 
-            font-style: italic; 
-            color: #666; 
-            font-size: clamp(0.9rem, 3vw, 1.2rem); 
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .message {
+            font-style: italic;
+            color: #666;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
             margin: 20px 0;
             cursor: pointer;
             transition: 0.3s;
             padding: 10px;
             border-radius: 10px;
         }
-        .message:hover {
-            background: #f0f0f0;
-            transform: scale(1.02);
-        }
+
+            .message:hover {
+                background: #f0f0f0;
+                transform: scale(1.02);
+            }
+
         .message-input {
             background: white;
             color: #333;
@@ -205,62 +259,119 @@
             resize: vertical;
             min-height: 60px;
         }
-        .close { position: absolute; right: 25px; top: 15px; font-size: 30px; cursor: pointer; color: #aaa; }
-        
-        .heart { position: absolute; font-size: 25px; user-select: none; pointer-events: none; animation: floatUp 3s ease-out forwards; }
-        @keyframes floatUp { 
-            0% { transform: translateY(0) scale(1); opacity: 1; } 
-            100% { transform: translateY(-400px) scale(1.5); opacity: 0; } 
+
+        .close {
+            position: absolute;
+            right: 25px;
+            top: 15px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 25px;
+            user-select: none;
+            pointer-events: none;
+            animation: floatUp 3s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-400px) scale(1.5);
+                opacity: 0;
+            }
         }
 
         /* Mobile responsive styles */
         @media screen and (max-width: 768px) {
-            .title { font-size: clamp(1.2rem, 6vw, 2.5rem); }
-            .controller-grid { flex-direction: column; gap: 10px; }
-            .controller-grid video { 
-                width: 90%; 
-                max-width: 300px;
-                height: auto;
-                min-height: 120px;
-                max-height: 180px;
+            .title {
+                font-size: clamp(1.2rem, 6vw, 2.5rem);
             }
-            .char-container { min-height: auto; height: auto; }
-            .modal-content { padding: 15px; margin: 2% auto; }
-            #openBtn { padding: 12px 30px; font-size: 1rem; }
-            .date { font-size: 0.9rem; padding: 4px 12px; }
-            .name-tag { font-size: 0.9rem; padding: 5px 15px; }
+
+            .controller-grid {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+                .controller-grid video {
+                    width: 90%;
+                    max-width: 300px;
+                    height: auto;
+                    min-height: 120px;
+                    max-height: 180px;
+                }
+
+            .char-container {
+                min-height: auto;
+                height: auto;
+            }
+
+            .modal-content {
+                padding: 15px;
+                margin: 2% auto;
+            }
+
+            #openBtn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .date {
+                font-size: 0.9rem;
+                padding: 4px 12px;
+            }
+
+            .name-tag {
+                font-size: 0.9rem;
+                padding: 5px 15px;
+            }
         }
 
         @media screen and (max-width: 480px) {
-            .title { font-size: clamp(1rem, 5vw, 2rem); }
-            .controller-grid video { 
-                width: 95%; 
+            .title {
+                font-size: clamp(1rem, 5vw, 2rem);
+            }
+
+            .controller-grid video {
+                width: 95%;
                 max-width: 250px;
                 min-height: 100px;
                 max-height: 150px;
             }
-            #openBtn { padding: 10px 25px; font-size: 0.9rem; }
-            .modal-content { padding: 10px; width: 95%; }
-            #gamer-video { 
-                width: 150px !important; 
+
+            #openBtn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 10px;
+                width: 95%;
+            }
+
+            #gamer-video {
+                width: 150px !important;
                 height: 150px !important;
                 min-height: 150px !important;
             }
         }
 
-        /* Video specific styles */
         #gamer-video {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
         }
-
-        /* No upload/sync UI needed — videos are hard-coded */
-
     </style>
 </head>
 <body>
 
-<div class="container">
+    <div class="container">
         <h1 class="title">
             <span class="title-letter">H</span>
             <span class="title-letter">a</span>
@@ -277,42 +388,56 @@
             <span class="title-letter">a</span>
             <span class="title-letter">y</span>
         </h1>
-        <div class="name-tag" id="nameTag">""</div>
+        <div class="name-tag" id="nameTag"></div>
 
         <div class="char-container">
             <div class="controller-grid">
                 <video autoplay loop muted playsinline preload="auto">
-                    <source src="videos/Cute%20Video%201.mp4" type="video/mp4">
+                    <source src="videos/Controller.mp4" type="video/mp4">
                 </video>
                 <video autoplay loop muted playsinline preload="auto">
-                    <source src="videos/Cute%20Video%202.mp4" type="video/mp4">
+                    <source src="videos/Controller3.mp4" type="video/mp4">
                 </video>
                 <video autoplay loop muted playsinline preload="auto">
-                    <source src="videos/Cute%20Video%203.mp4" type="video/mp4">
+                    <source src="videos/Controller4.mp4" type="video/mp4">
                 </video>
             </div>
         </div>
 
         <button id="openBtn">Open Your Gift 🎁</button>
+
+        <div class="upload-section" style="margin: 40px auto; padding: 25px; background: rgba(0,74,159,0.1); border-radius: 15px; max-width: 500px; border: 2px dashed #004a9f;">
+            <h3 style="color: #004a9f; margin-top: 0;">Upload a Birthday Message!</h3>
+            <input type="file" id="videoInput" accept="video/*" style="margin: 10px 0; max-width: 100%; font-family: 'Segoe UI', Arial, sans-serif;">
+            <br>
+            <button id="uploadBtn" style="padding: 10px 20px; cursor: pointer; border-radius: 20px; background-color: #004a9f; color: white; border: none; font-weight: bold; font-size: 1rem; transition: 0.3s; margin-top: 10px;">
+                Upload Video
+            </button>
+            <p id="uploadStatus" style="margin-top: 15px; font-weight: bold; color: #004a9f;"></p>
+        </div>
+
+        <div id="videoGrid" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; margin-bottom: 40px;"></div>
+
     </div>
 
     <div id="cardModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <video id="gamer-video" loop muted playsinline controls preload="auto" style="width:200px; height:200px; margin:0 auto; display:block; background:#667eea;">
-                <source src="videos/Cute%20Video%204.mp4" type="video/mp4">
+                <source src="videos/Cool Gamer.mp4" type="video/mp4">
                 Your browser does not support the video tag.
-            </video> 
+            </video>
             <div id="video-fallback" style="display:none; margin-top:12px; color:#c00;">
-                Can't play the video inline. <a id="video-open-link" href="videos/Cute%20Video%204.mp4" target="_blank" rel="noopener">Open video in a new tab</a>
+                Can't play the video inline. <a id="video-open-link" href="videos/Cool%20Gamer.mp4" target="_blank" rel="noopener">Open video in a new tab</a>
             </div>
-            <h3>HAPPY BIRTHDAY 💐</h3>
+            <h3>HAPPY BIRTHDAY!💟</h3>
             <p class="message" id="messageText">"You are a very special boy. I wish you all the best, lots of health, and lots of joy. Happy Birthday!"</p>
             <div id="heart-container"></div>
         </div>
     </div>
 
     <script src="github-config.js"></script>
+    <script src="script.js"></script>
     <script>
         const modal = document.getElementById("cardModal");
         const btn = document.getElementById("openBtn");
@@ -342,7 +467,6 @@
         async function saveRemoteName(name) {
             if (!WORKER_URL) return;
             try {
-                // Load current database so we do not lose video entries
                 let db = { videos: {}, lastUpdated: 0 };
                 try {
                     const response = await fetch(`${WORKER_URL}/db`, { cache: 'no-store' });
@@ -384,7 +508,6 @@
                 remoteProfile = await fetchRemoteProfile();
             }
 
-            // Name precedence: URL param > remote profile > local saved > HTML default
             if (customName && nameTagEl) {
                 nameTagEl.textContent = customName;
                 localStorage.setItem('birthdayName', customName);
@@ -396,7 +519,6 @@
                 nameTagEl.textContent = savedName;
             }
 
-            // Message precedence: URL param > local saved > HTML default
             if (customMessage && messageEl) {
                 messageEl.textContent = customMessage;
                 localStorage.setItem('birthdayMessage', customMessage);
@@ -407,13 +529,13 @@
 
         // Make name tag editable on click
         const nameTag = document.getElementById('nameTag');
-        nameTag.addEventListener('click', function() {
+        nameTag.addEventListener('click', function () {
             const currentName = nameTag.textContent;
             const input = document.createElement('input');
             input.type = 'text';
             input.value = currentName;
             input.className = 'name-input';
-            
+
             nameTag.replaceWith(input);
             input.focus();
             input.select();
@@ -424,20 +546,16 @@
                 newNameTag.className = 'name-tag';
                 newNameTag.id = 'nameTag';
                 newNameTag.textContent = newName;
-                
-                // Save to localStorage
+
                 localStorage.setItem('birthdayName', newName);
-                // Save globally so the last used name is shared across devices
                 saveRemoteName(newName);
-                
+
                 input.replaceWith(newNameTag);
-                
-                // Re-attach click event to new element
                 newNameTag.addEventListener('click', arguments.callee.bind(nameTag));
             }
 
             input.addEventListener('blur', saveName);
-            input.addEventListener('keypress', function(e) {
+            input.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     saveName();
                 }
@@ -446,12 +564,12 @@
 
         // Make message editable on click
         const messageText = document.getElementById('messageText');
-        messageText.addEventListener('click', function() {
+        messageText.addEventListener('click', function () {
             const currentMessage = messageText.textContent;
             const textarea = document.createElement('textarea');
             textarea.value = currentMessage;
             textarea.className = 'message-input';
-            
+
             messageText.replaceWith(textarea);
             textarea.focus();
             textarea.select();
@@ -462,18 +580,14 @@
                 newMessageText.className = 'message';
                 newMessageText.id = 'messageText';
                 newMessageText.textContent = newMessage;
-                
-                // Save to localStorage
+
                 localStorage.setItem('birthdayMessage', newMessage);
-                
                 textarea.replaceWith(newMessageText);
-                
-                // Re-attach click event to new element
                 newMessageText.addEventListener('click', arguments.callee.bind(messageText));
             }
 
             textarea.addEventListener('blur', saveMessage);
-            textarea.addEventListener('keypress', function(e) {
+            textarea.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter' && e.ctrlKey) {
                     saveMessage();
                 }
@@ -483,17 +597,14 @@
         btn.onclick = () => {
             modal.style.display = "block";
             if (gamerVideo) {
-                // Force load the video on mobile
                 gamerVideo.load();
                 gamerVideo.currentTime = 0;
-                
-                // Give the video a moment to load before playing
+
                 setTimeout(() => {
                     const playPromise = gamerVideo.play();
                     if (playPromise && playPromise.catch) {
                         playPromise.catch(err => {
                             console.error('gamer-video play failed:', err);
-                            // Try playing without muted on mobile (some browsers require user interaction)
                             gamerVideo.muted = false;
                             gamerVideo.play().catch(err2 => {
                                 console.error('Second play attempt failed:', err2);
@@ -519,12 +630,11 @@
         };
 
         function createShape(clickX, clickY) {
-            const symbols = ["❤", "💟", "💐", "🎉"];
+            const symbols = ["💐", "❤", "🎁", "💖"];
             const colors = ["#ff6ec7", "#00e6a8", "#5da9ff", "#ff4b4b", "#ffd700", "#00ff00", "#ff00ff", "#00ffff"];
-            
-            // Create massive explosion to fill screen
+
             const numShapes = 80 + Math.floor(Math.random() * 40);
-            
+
             for (let i = 0; i < numShapes; i++) {
                 setTimeout(() => {
                     const index = Math.floor(Math.random() * symbols.length);
@@ -532,26 +642,22 @@
                     shape.className = "shape-symbol";
                     shape.textContent = symbols[index];
                     shape.style.color = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    // Random size variation
+
                     const size = 1.5 + Math.random() * 2;
                     shape.style.fontSize = size + 'rem';
-                    
-                    // Position at click location
                     shape.style.left = clickX + 'px';
                     shape.style.top = clickY + 'px';
-                    
-                    // Random direction and much larger distance for full screen coverage
+
                     const angle = Math.random() * Math.PI * 2;
                     const distance = 200 + Math.random() * 800;
                     const tx = Math.cos(angle) * distance;
                     const ty = Math.sin(angle) * distance;
                     const rotate = Math.random() * 1440 - 720;
-                    
+
                     shape.style.setProperty('--tx', tx + 'px');
                     shape.style.setProperty('--ty', ty + 'px');
                     shape.style.setProperty('--rotate', rotate + 'deg');
-                    
+
                     document.body.appendChild(shape);
                     setTimeout(() => shape.remove(), 3000);
                 }, i * 15);
@@ -577,40 +683,6 @@
             });
         });
 
-        function setupVideoFallback(video, sources) {
-            if (!video || !sources || sources.length === 0) return;
-            const sourceEl = video.querySelector('source');
-            if (!sourceEl) return;
-
-            let sourceIndex = 0;
-
-            const trySource = (index) => {
-                sourceEl.src = sources[index];
-                video.load();
-            };
-
-            video.addEventListener('error', () => {
-                sourceIndex += 1;
-                if (sourceIndex < sources.length) {
-                    trySource(sourceIndex);
-                }
-            });
-
-            trySource(sourceIndex);
-        }
-
-        const controllerVideos = document.querySelectorAll('.controller-grid video');
-        const controllerVideoSources = [
-            ['videos/Cute%20Video%201.mp4', 'videos/Controller.mp4'],
-            ['videos/Cute%20Video%202.mp4', 'videos/Controller3.mp4'],
-            ['videos/Cute%20Video%203.mp4', 'videos/Controller4.mp4']
-        ];
-        controllerVideos.forEach((video, index) => {
-            setupVideoFallback(video, controllerVideoSources[index] || []);
-        });
-
-        setupVideoFallback(gamerVideo, ['videos/Cute%20Video%204.mp4', 'videos/Cool%20Gamer.mp4']);
-
         if (gamerVideo) {
             gamerVideo.addEventListener('error', (e) => {
                 console.error('gamer-video error', e);
@@ -620,10 +692,10 @@
             gamerVideo.addEventListener('loadeddata', () => { console.log('gamer-video loadeddata, readyState=', gamerVideo.readyState); });
         }
 
-        // Stagger autoplay on mobile to avoid bandwidth competition
+        const controllerVideos = document.querySelectorAll('.controller-grid video');
         controllerVideos.forEach((video, index) => {
             setTimeout(() => {
-                video.play().catch(() => {});
+                video.play().catch(() => { });
             }, index * 300);
         });
     </script>
