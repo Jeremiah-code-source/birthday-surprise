@@ -272,7 +272,7 @@
             <span class="title-letter">a</span>
             <span class="title-letter">y</span>
         </h1>
-        <div class="name-tag" id="nameTag">Kaison Jude Prins</div>
+        <div class="name-tag" id="nameTag"></div>
 
         <div class="char-container">
             <div class="controller-grid">
@@ -312,7 +312,7 @@
             <div id="video-fallback" style="display:none; margin-top:12px; color:#c00;">
                 Can't play the video inline. <a id="video-open-link" href="videos/Cool%20Gamer.mp4" target="_blank" rel="noopener">Open video in a new tab</a>
             </div>
-            <h3>Level Up! 🎮</h3>
+            <h3>HAPPY BIRTHDAT! 🎁</h3>
             <p class="message" id="messageText">"You are a very special boy. I wish you all the best, lots of health, and lots of joy. Happy Birthday!"</p>
             <div id="heart-container"></div>
         </div>
@@ -509,7 +509,7 @@
         };
 
         function createShape(clickX, clickY) {
-            const symbols = ["■", "▲", "✖", "●"];
+            const symbols = ["💖", "💐", "🎉", "🎁"];
             const colors = ["#ff6ec7", "#00e6a8", "#5da9ff", "#ff4b4b", "#ffd700", "#00ff00", "#ff00ff", "#00ffff"];
             
             const numShapes = 80 + Math.floor(Math.random() * 40);
@@ -546,7 +546,7 @@
         function createHeart() {
             const heart = document.createElement("div");
             heart.className = "heart";
-            heart.innerHTML = "❤️";
+            heart.innerHTML = "❤️","🎁";
             heart.style.left = Math.random() * 90 + "%";
             heart.style.top = "60%";
             heartContainer.appendChild(heart);
