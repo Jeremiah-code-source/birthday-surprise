@@ -282,13 +282,13 @@
         <div class="char-container">
             <div class="controller-grid">
                 <video autoplay loop muted playsinline preload="auto">
-                    <source src="videos/Cute Video 1.mp4" type="video/mp4">
+                    <source src="videos/Cute%20Video%201.mp4" type="video/mp4">
                 </video>
                 <video autoplay loop muted playsinline preload="auto">
-                    <source src="videos/Cute Video 2.mp4" type="video/mp4">
+                    <source src="videos/Cute%20Video%202.mp4" type="video/mp4">
                 </video>
                 <video autoplay loop muted playsinline preload="auto">
-                    <source src="videos/Cute Video 3.mp4" type="video/mp4">
+                    <source src="videos/Cute%20Video%203.mp4" type="video/mp4">
                 </video>
             </div>
         </div>
@@ -300,7 +300,7 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <video id="gamer-video" loop muted playsinline controls preload="auto" style="width:200px; height:200px; margin:0 auto; display:block; background:#667eea;">
-                <source src="videos/Cute Video 4.mp4" type="video/mp4">
+                <source src="videos/Cute%20Video%204.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video> 
             <div id="video-fallback" style="display:none; margin-top:12px; color:#c00;">
@@ -577,6 +577,40 @@
             });
         });
 
+        function setupVideoFallback(video, sources) {
+            if (!video || !sources || sources.length === 0) return;
+            const sourceEl = video.querySelector('source');
+            if (!sourceEl) return;
+
+            let sourceIndex = 0;
+
+            const trySource = (index) => {
+                sourceEl.src = sources[index];
+                video.load();
+            };
+
+            video.addEventListener('error', () => {
+                sourceIndex += 1;
+                if (sourceIndex < sources.length) {
+                    trySource(sourceIndex);
+                }
+            });
+
+            trySource(sourceIndex);
+        }
+
+        const controllerVideos = document.querySelectorAll('.controller-grid video');
+        const controllerVideoSources = [
+            ['videos/Cute%20Video%201.mp4', 'videos/Controller.mp4'],
+            ['videos/Cute%20Video%202.mp4', 'videos/Controller3.mp4'],
+            ['videos/Cute%20Video%203.mp4', 'videos/Controller4.mp4']
+        ];
+        controllerVideos.forEach((video, index) => {
+            setupVideoFallback(video, controllerVideoSources[index] || []);
+        });
+
+        setupVideoFallback(gamerVideo, ['videos/Cute%20Video%204.mp4', 'videos/Cool%20Gamer.mp4']);
+
         if (gamerVideo) {
             gamerVideo.addEventListener('error', (e) => {
                 console.error('gamer-video error', e);
@@ -587,7 +621,6 @@
         }
 
         // Stagger autoplay on mobile to avoid bandwidth competition
-        const controllerVideos = document.querySelectorAll('.controller-grid video');
         controllerVideos.forEach((video, index) => {
             setTimeout(() => {
                 video.play().catch(() => {});
