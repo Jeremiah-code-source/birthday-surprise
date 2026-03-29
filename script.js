@@ -8,28 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof githubConfig === 'undefined' || !githubConfig.workerUrl) return;
         
         try {
-            // Connect to your Cloudflare Worker database
             const response = await fetch(`${githubConfig.workerUrl}/db`, { cache: 'no-store' });
             if (!response.ok) throw new Error("Failed to load database");
             
             const db = await response.json();
             let videos = Object.values(db.videos || {});
             
-            // If no videos are uploaded yet, keep the default controller videos
             if (videos.length === 0) return; 
 
-            // If there are more than 4 videos uploaded, only keep the 4 newest ones
             if (videos.length > 4) {
                 videos = videos.slice(-4);
             }
 
-            // Grab the 4 core video spots on your webpage
             const ctrlVid1 = document.getElementById('ctrlVid1');
             const ctrlVid2 = document.getElementById('ctrlVid2');
             const ctrlVid3 = document.getElementById('ctrlVid3');
             const gamerVid = document.getElementById('gamer-video');
 
-            // Replace the default videos with your uploaded ones!
             if (videos.length > 0 && ctrlVid1) {
                 ctrlVid1.src = videos[0].url;
                 ctrlVid1.load(); 
@@ -52,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Run the loader immediately
     loadVideos();
 
     // 2. Upload Video Logic
@@ -94,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     uploadStatus.textContent = "Success! Your video has been uploaded.";
                     uploadStatus.style.color = "green";
                     
-                    // Reload the page to show the new video instantly
                     setTimeout(() => {
                         window.location.reload();
                     }, 2000);
@@ -115,4 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toBase64(file) {
     return new Promise((resolve, reject) => {
-        const reader = new
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
