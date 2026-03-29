@@ -89,7 +89,6 @@
             min-width: 180px;
         }
 
-        /* Ensuring the controller container is large enough and centered */
         .char-container {
             margin: 10px auto;
             position: relative;
@@ -289,7 +288,6 @@
             }
         }
 
-        /* Mobile responsive styles */
         @media screen and (max-width: 768px) {
             .title {
                 font-size: clamp(1.2rem, 6vw, 2.5rem);
@@ -388,7 +386,7 @@
             <span class="title-letter">a</span>
             <span class="title-letter">y</span>
         </h1>
-        <div class="name-tag" id="nameTag"></div>
+        <div class="name-tag" id="nameTag">Kaison Jude Prins</div>
 
         <div class="char-container">
             <div class="controller-grid">
@@ -406,17 +404,17 @@
 
         <button id="openBtn">Open Your Gift 🎁</button>
 
-        <div class="upload-section" style="margin: 40px auto; padding: 25px; background: rgba(0,74,159,0.1); border-radius: 15px; max-width: 500px; border: 2px dashed #004a9f;">
-            <h3 style="color: #004a9f; margin-top: 0;">Upload a Birthday Message!</h3>
-            <input type="file" id="videoInput" accept="video/*" style="margin: 10px 0; max-width: 100%; font-family: 'Segoe UI', Arial, sans-serif;">
+        <div class="upload-section" style="margin: 25px auto; padding: 15px; background: rgba(0,74,159,0.1); border-radius: 12px; max-width: 320px; border: 2px dashed #004a9f;">
+            <h4 style="color: #004a9f; margin-top: 0; margin-bottom: 10px; font-size: 1.1rem;">Upload a Birthday Message!</h4>
+            <input type="file" id="videoInput" accept="video/*" style="margin-bottom: 10px; max-width: 100%; font-family: 'Segoe UI', Arial, sans-serif; font-size: 0.85rem;">
             <br>
-            <button id="uploadBtn" style="padding: 10px 20px; cursor: pointer; border-radius: 20px; background-color: #004a9f; color: white; border: none; font-weight: bold; font-size: 1rem; transition: 0.3s; margin-top: 10px;">
+            <button id="uploadBtn" style="padding: 8px 16px; cursor: pointer; border-radius: 20px; background-color: #004a9f; color: white; border: none; font-weight: bold; font-size: 0.9rem; transition: 0.3s;">
                 Upload Video
             </button>
-            <p id="uploadStatus" style="margin-top: 15px; font-weight: bold; color: #004a9f;"></p>
+            <p id="uploadStatus" style="margin-top: 10px; font-weight: bold; color: #004a9f; font-size: 0.85rem; margin-bottom: 0;"></p>
         </div>
 
-        <div id="videoGrid" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; margin-bottom: 40px;"></div>
+        <div id="videoGrid" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 10px; margin-bottom: 40px;"></div>
 
     </div>
 
@@ -430,7 +428,7 @@
             <div id="video-fallback" style="display:none; margin-top:12px; color:#c00;">
                 Can't play the video inline. <a id="video-open-link" href="videos/Cool%20Gamer.mp4" target="_blank" rel="noopener">Open video in a new tab</a>
             </div>
-            <h3>HAPPY BIRTHDAY!💟</h3>
+            <h3>Level Up! 🎮</h3>
             <p class="message" id="messageText">"You are a very special boy. I wish you all the best, lots of health, and lots of joy. Happy Birthday!"</p>
             <div id="heart-container"></div>
         </div>
@@ -446,7 +444,6 @@
         const gamerVideo = document.getElementById("gamer-video");
         const titleLetters = document.querySelectorAll(".title-letter");
 
-        // Use worker URL from config when available
         const WORKER_URL = (typeof githubConfig !== 'undefined' && githubConfig.workerUrl)
             ? githubConfig.workerUrl
             : '';
@@ -527,7 +524,6 @@
             }
         })();
 
-        // Make name tag editable on click
         const nameTag = document.getElementById('nameTag');
         nameTag.addEventListener('click', function () {
             const currentName = nameTag.textContent;
@@ -562,7 +558,6 @@
             });
         });
 
-        // Make message editable on click
         const messageText = document.getElementById('messageText');
         messageText.addEventListener('click', function () {
             const currentMessage = messageText.textContent;
@@ -630,7 +625,7 @@
         };
 
         function createShape(clickX, clickY) {
-            const symbols = ["💐", "❤", "🎁", "💖"];
+            const symbols = ["■", "▲", "✖", "●"];
             const colors = ["#ff6ec7", "#00e6a8", "#5da9ff", "#ff4b4b", "#ffd700", "#00ff00", "#ff00ff", "#00ffff"];
 
             const numShapes = 80 + Math.floor(Math.random() * 40);
