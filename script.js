@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            uploadStatus.textContent = "Uploading... please wait (this might take a minute).";
+            uploadStatus.textContent = "Uploading video... (Step 1 of 2)";
             uploadStatus.style.color = "#004a9f";
             uploadBtn.disabled = true;
 
@@ -72,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
                 const filename = `${videoId}_${safeFileName}`;
 
-                const response = await fetch(`${githubConfig.workerUrl}/upload`, {
+                // STEP 1: Upload the video file
+                const uploadResponse = await fetch(`${githubConfig.workerUrl}/upload`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -82,18 +83,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
-                const result = await response.json();
+                const uploadResult = await uploadResponse.json();
 
-                if (response.ok) {
-                    uploadStatus.textContent = "Success! Your video has been uploaded.";
-                    uploadStatus.style.color = "green";
-                    
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                } else {
-                    throw new Error(result.error || 'Upload failed');
+                if (!uploadResponse.ok) {
+                    throw new Error(uploadResult.error || 'Upload failed');
                 }
+
+                uploadStatus.textContent = "Updating database... (Step 2 of 2)";
+
+                // STEP 2: Tell the database about the new video
+                // Grab the current database
+                const dbResponse = await fetch(`${githubConfig.workerUrl}/db`, { cache: 'no-store' });
+                const db = dbResponse.ok ? await dbResponse.json() : { videos: {} };
+                if (!db.videos) db.videos = {};
+
+                // Add the new video URL
+                db.videos[videoId] = {
+                    url: uploadResult.url,
+                    addedAt: Date.now()
+                };
+
+                // Save the updated database
+                const updateResponse = await fetch(`${githubConfig.workerUrl}/update-db`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dbContent: db })
+                });
+
+                if (!updateResponse.ok) {
+                    throw new Error('Failed to update the video database');
+                }
+
+                uploadStatus.textContent = "Success! Your video is live.";
+                uploadStatus.style.color = "green";
+                
+                // Reload the page to show it instantly
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+
             } catch (error) {
                 console.error("Upload error:", error);
                 uploadStatus.textContent = "Error: " + error.message;
