@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadBtn = document.getElementById('uploadBtn');
     const videoInput = document.getElementById('videoInput');
     const uploadStatus = document.getElementById('uploadStatus');
-    const videoGrid = document.getElementById('videoGrid'); // For any extra videos
 
     // 1. Fetch and Display Existing Videos
     async function loadVideos() {
@@ -14,10 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error("Failed to load database");
             
             const db = await response.json();
-            const videos = Object.values(db.videos || {});
+            let videos = Object.values(db.videos || {});
             
             // If no videos are uploaded yet, keep the default controller videos
             if (videos.length === 0) return; 
+
+            // If there are more than 4 videos uploaded, only keep the 4 newest ones
+            if (videos.length > 4) {
+                videos = videos.slice(-4);
+            }
 
             // Grab the 4 core video spots on your webpage
             const ctrlVid1 = document.getElementById('ctrlVid1');
@@ -28,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Replace the default videos with your uploaded ones!
             if (videos.length > 0 && ctrlVid1) {
                 ctrlVid1.src = videos[0].url;
-                ctrlVid1.load(); // Force the new video to load
+                ctrlVid1.load(); 
             }
             if (videos.length > 1 && ctrlVid2) {
                 ctrlVid2.src = videos[1].url;
@@ -43,26 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 gamerVid.load();
             }
 
-            // If you upload MORE than 4 videos, put the extras in a grid at the bottom
-            if (videoGrid && videos.length > 4) {
-                videoGrid.innerHTML = '<h3 style="color: #004a9f; width: 100%; text-align: center;">Extra Messages:</h3>'; 
-                for(let i = 4; i < videos.length; i++) {
-                    const videoWrapper = document.createElement('div');
-                    videoWrapper.style.width = '250px';
-                    videoWrapper.style.backgroundColor = '#004a9f';
-                    videoWrapper.style.padding = '10px';
-                    videoWrapper.style.borderRadius = '15px';
-
-                    const videoElement = document.createElement('video');
-                    videoElement.src = videos[i].url;
-                    videoElement.controls = true;
-                    videoElement.style.width = '100%';
-                    videoElement.style.borderRadius = '10px';
-                    
-                    videoWrapper.appendChild(videoElement);
-                    videoGrid.appendChild(videoWrapper);
-                }
-            }
         } catch (error) {
             console.error('Error loading videos:', error);
         }
@@ -131,9 +115,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toBase64(file) {
     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
-}
+        const reader = new
