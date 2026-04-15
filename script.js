@@ -1,58 +1,52 @@
-// --- VIDEO UPLOAD AND GALLERY LOGIC ---
-// (Note: The modal and heart animations are handled safely inside index.html)
-
 document.addEventListener('DOMContentLoaded', () => {
     const uploadBtn = document.getElementById('uploadBtn');
     const videoInput = document.getElementById('videoInput');
     const uploadStatus = document.getElementById('uploadStatus');
-    const videoGrid = document.getElementById('videoGrid');
 
     // 1. Fetch and Display Existing Videos
     async function loadVideos() {
-        if (!videoGrid || typeof githubConfig === 'undefined' || !githubConfig.workerUrl) return;
+        if (typeof githubConfig === 'undefined' || !githubConfig.workerUrl) return;
         
         try {
-            videoGrid.innerHTML = '<p style="color: #004a9f; width: 100%; text-align: center;">Loading special messages...</p>';
-            
-            // Connect to your Cloudflare Worker database
             const response = await fetch(`${githubConfig.workerUrl}/db`, { cache: 'no-store' });
             if (!response.ok) throw new Error("Failed to load database");
             
             const db = await response.json();
-            videoGrid.innerHTML = ''; 
+            let videos = Object.values(db.videos || {});
             
-            const videos = Object.values(db.videos || {});
-            if (videos.length === 0) {
-                videoGrid.innerHTML = '<p style="color: #004a9f; width: 100%; text-align: center;">No videos yet. Be the first to upload one!</p>';
-                return;
+            if (videos.length === 0) return; 
+
+            if (videos.length > 4) {
+                videos = videos.slice(-4);
             }
 
-            // Display each uploaded video in a neat grid
-            videos.forEach(video => {
-                const videoWrapper = document.createElement('div');
-                videoWrapper.style.width = '250px';
-                videoWrapper.style.backgroundColor = '#004a9f';
-                videoWrapper.style.padding = '10px';
-                videoWrapper.style.borderRadius = '15px';
-                videoWrapper.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+            const ctrlVid1 = document.getElementById('ctrlVid1');
+            const ctrlVid2 = document.getElementById('ctrlVid2');
+            const ctrlVid3 = document.getElementById('ctrlVid3');
+            const gamerVid = document.getElementById('gamer-video');
 
-                const videoElement = document.createElement('video');
-                videoElement.src = video.url;
-                videoElement.controls = true;
-                videoElement.style.width = '100%';
-                videoElement.style.borderRadius = '10px';
-                videoElement.style.backgroundColor = '#000';
-                
-                videoWrapper.appendChild(videoElement);
-                videoGrid.appendChild(videoWrapper);
-            });
+            if (videos.length > 0 && ctrlVid1) {
+                ctrlVid1.src = videos[0].url;
+                ctrlVid1.load(); 
+            }
+            if (videos.length > 1 && ctrlVid2) {
+                ctrlVid2.src = videos[1].url;
+                ctrlVid2.load();
+            }
+            if (videos.length > 2 && ctrlVid3) {
+                ctrlVid3.src = videos[2].url;
+                ctrlVid3.load();
+            }
+            if (videos.length > 3 && gamerVid) {
+                gamerVid.src = videos[3].url;
+                gamerVid.load();
+            }
+
         } catch (error) {
             console.error('Error loading videos:', error);
-            videoGrid.innerHTML = `<p style="color: red; width: 100%; text-align: center;">Could not load the videos.</p>`;
         }
     }
 
-    // Run the loader immediately
     loadVideos();
 
     // 2. Upload Video Logic
@@ -66,12 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            uploadStatus.textContent = "Uploading... please wait (this might take a minute).";
+            uploadStatus.textContent = "Uploading video... (Step 1 of 2)";
             uploadStatus.style.color = "#004a9f";
             uploadBtn.disabled = true;
 
             try {
-                // Convert video format for GitHub
                 const base64Content = await toBase64(file);
                 const base64Data = base64Content.split(',')[1]; 
                 
@@ -79,8 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
                 const filename = `${videoId}_${safeFileName}`;
 
-                // Send to Cloudflare Worker
-                const response = await fetch(`${githubConfig.workerUrl}/upload`, {
+                // STEP 1: Upload the video file
+                const uploadResponse = await fetch(`${githubConfig.workerUrl}/upload`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -90,19 +83,45 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
-                const result = await response.json();
+                const uploadResult = await uploadResponse.json();
 
-                if (response.ok) {
-                    uploadStatus.textContent = "Success! Your video has been uploaded.";
-                    uploadStatus.style.color = "green";
-                    
-                    // Reload the page to show the new video instantly
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                } else {
-                    throw new Error(result.error || 'Upload failed');
+                if (!uploadResponse.ok) {
+                    throw new Error(uploadResult.error || 'Upload failed');
                 }
+
+                uploadStatus.textContent = "Updating database... (Step 2 of 2)";
+
+                // STEP 2: Tell the database about the new video
+                // Grab the current database
+                const dbResponse = await fetch(`${githubConfig.workerUrl}/db`, { cache: 'no-store' });
+                const db = dbResponse.ok ? await dbResponse.json() : { videos: {} };
+                if (!db.videos) db.videos = {};
+
+                // Add the new video URL
+                db.videos[videoId] = {
+                    url: uploadResult.url,
+                    addedAt: Date.now()
+                };
+
+                // Save the updated database
+                const updateResponse = await fetch(`${githubConfig.workerUrl}/update-db`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dbContent: db })
+                });
+
+                if (!updateResponse.ok) {
+                    throw new Error('Failed to update the video database');
+                }
+
+                uploadStatus.textContent = "Success! Your video is live.";
+                uploadStatus.style.color = "green";
+                
+                // Reload the page to show it instantly
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+
             } catch (error) {
                 console.error("Upload error:", error);
                 uploadStatus.textContent = "Error: " + error.message;
@@ -115,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Helper function to read the video file
 function toBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
