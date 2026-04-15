@@ -489,6 +489,34 @@
             }
         }
 
+        async function saveRemoteMessage(message) {
+            if (!WORKER_URL) return;
+            try {
+                let db = { videos: {}, lastUpdated: 0 };
+                try {
+                    const response = await fetch(`${WORKER_URL}/db`, { cache: 'no-store' });
+                    if (response.ok) {
+                        db = await response.json();
+                    }
+                } catch (readError) {
+                    console.warn('Failed to read DB before saving message, creating new one:', readError);
+                }
+
+                if (!db.videos) db.videos = {};
+                db.profile = db.profile || {};
+                db.profile.message = message;
+                db.lastUpdated = Date.now();
+
+                await fetch(`${WORKER_URL}/update-db`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dbContent: db })
+                });
+            } catch (error) {
+                console.error('Failed to save remote message:', error);
+            }
+        }
+
         (async function initPersonalization() {
             const urlParams = new URLSearchParams(window.location.search);
             const customName = urlParams.get('name');
@@ -519,6 +547,10 @@
             if (customMessage && messageEl) {
                 messageEl.textContent = customMessage;
                 localStorage.setItem('birthdayMessage', customMessage);
+                saveRemoteMessage(customMessage);
+            } else if (remoteProfile && remoteProfile.message && messageEl) {
+                messageEl.textContent = remoteProfile.message;
+                localStorage.setItem('birthdayMessage', remoteProfile.message);
             } else if (savedMessage && messageEl) {
                 messageEl.textContent = savedMessage;
             }
@@ -577,6 +609,7 @@
                 newMessageText.textContent = newMessage;
 
                 localStorage.setItem('birthdayMessage', newMessage);
+                saveRemoteMessage(newMessage);
                 textarea.replaceWith(newMessageText);
                 newMessageText.addEventListener('click', arguments.callee.bind(messageText));
             }
