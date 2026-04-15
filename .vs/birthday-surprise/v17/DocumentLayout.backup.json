@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-config.template.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:github-config.template.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\script.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:script.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,13 +34,43 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "script.js",
+              "DocumentMoniker": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\script.js",
+              "RelativeDocumentMoniker": "script.js",
+              "ToolTip": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\script.js",
+              "RelativeToolTip": "script.js",
+              "ViewState": "AgIAAE8AAAAAAAAAAAAIwH0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-03-29T14:48:54.971Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "github-config.template.js",
+              "DocumentMoniker": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-config.template.js",
+              "RelativeDocumentMoniker": "github-config.template.js",
+              "ToolTip": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\github-config.template.js",
+              "RelativeToolTip": "github-config.template.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-03-29T14:38:10.089Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "index.html",
               "DocumentMoniker": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\index.html",
               "RelativeDocumentMoniker": "index.html",
               "ToolTip": "C:\\Users\\Kenan Prins\\source\\repos\\Jeremiah-code-source\\birthday-surprise\\index.html",
               "RelativeToolTip": "index.html",
-              "ViewState": "AgIAAKgBAAAAWDIzMzMrwAkCAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
               "WhenOpened": "2026-03-29T14:09:34.194Z",
               "EditorCaption": ""

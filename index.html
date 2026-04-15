@@ -344,7 +344,7 @@
             }
         }
 
-        async function saveRemoteName(name) {
+        async function saveRemoteProfile(profileUpdates) {
             if (!WORKER_URL) return;
             try {
                 let db = { videos: {}, lastUpdated: 0 };
@@ -359,7 +359,7 @@
 
                 if (!db.videos) db.videos = {};
                 db.profile = db.profile || {};
-                db.profile.name = name;
+                Object.assign(db.profile, profileUpdates || {});
                 db.lastUpdated = Date.now();
 
                 await fetch(`${WORKER_URL}/update-db`, {
@@ -368,36 +368,16 @@
                     body: JSON.stringify({ dbContent: db })
                 });
             } catch (error) {
-                console.error('Failed to save remote name:', error);
+                console.error('Failed to save remote profile:', error);
             }
         }
 
+        async function saveRemoteName(name) {
+            await saveRemoteProfile({ name });
+        }
+
         async function saveRemoteMessage(message) {
-            if (!WORKER_URL) return;
-            try {
-                let db = { videos: {}, lastUpdated: 0 };
-                try {
-                    const response = await fetch(`${WORKER_URL}/db`, { cache: 'no-store' });
-                    if (response.ok) {
-                        db = await response.json();
-                    }
-                } catch (readError) {
-                    console.warn('Failed to read DB before saving message, creating new one:', readError);
-                }
-
-                if (!db.videos) db.videos = {};
-                db.profile = db.profile || {};
-                db.profile.message = message;
-                db.lastUpdated = Date.now();
-
-                await fetch(`${WORKER_URL}/update-db`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ dbContent: db })
-                });
-            } catch (error) {
-                console.error('Failed to save remote message:', error);
-            }
+            await saveRemoteProfile({ message });
         }
 
         (async function initPersonalization() {
@@ -412,7 +392,7 @@
             const messageEl = document.getElementById('messageText');
 
             let remoteProfile = null;
-            if (!customName) {
+            if (!customName || !customMessage) {
                 remoteProfile = await fetchRemoteProfile();
             }
 
